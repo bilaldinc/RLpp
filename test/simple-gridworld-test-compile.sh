@@ -1,4 +1,6 @@
 #!/bin/bash
+mkdir build > /dev/null 2>&1
+
 g++ src/simple-gridworld-test.cpp \
 ../build/rlinterface/environment.o \
 ../build/rlinterface/state.o \
