@@ -14,6 +14,6 @@
 
 namespace rlinterface{
 
-    Environment::~Environment() = default;
+  Environment::~Environment() = default;
 
 }
