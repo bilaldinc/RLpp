@@ -16,6 +16,7 @@ namespace qlearning{
   }
 
   void QLearningAgent::Train(int numberofepisode){
+    // Uses EpsilonGreedyPolicy function. See function implementation
     int episodecounter = 1;
     //for each episode
     while (episodecounter < numberofepisode){
@@ -40,12 +41,13 @@ namespace qlearning{
         currentagentstate = nextagentstate;
         stepsizecounter++;
       }
-      episodecounter++;
       std::cout << "episode : " <<episodecounter << "  stepsize : " << stepsizecounter <<'\n';
+      episodecounter++;
     }
   }
 
   void QLearningAgent::TrainRandom(int numberofepisode){
+    // Uses EpsilonGreedyPolicyRandom function. See function implementation
     int episodecounter = 1;
     //for each episode
     while (episodecounter < numberofepisode){
@@ -70,12 +72,13 @@ namespace qlearning{
         currentagentstate = nextagentstate;
         stepsizecounter++;
       }
-      episodecounter++;
       std::cout << "episode : " <<episodecounter << "  stepsize : " << stepsizecounter <<'\n';
+      episodecounter++;
     }
   }
 
   void QLearningAgent::TrainV2(int numberofepisode){
+    // Uses EpsilonGreedyPolicyV2 function. See function implementation
     int episodecounter = 1;
     //for each episode
     while (episodecounter < numberofepisode){
@@ -100,17 +103,18 @@ namespace qlearning{
         currentagentstate = nextagentstate;
         stepsizecounter++;
       }
-      episodecounter++;
       std::cout << "episode : " <<episodecounter << "  stepsize : " << stepsizecounter <<'\n';
+      episodecounter++;
     }
   }
 
   int QLearningAgent::EpsilonGreedyPolicy(std::list<State>::iterator agentstate){
     // O(actions)
+    // Selects greedy action with the probability = 1 - e + (1 / #ofactions)
+    // If some greedy actions are equal, selects first encountered in list
     if(distribution(generator) > epsilon){
       //select max valued action
       return agentstate->GetMaxActionType();
-
     }
     else{
       //select randomly among all actions
@@ -124,6 +128,8 @@ namespace qlearning{
 
   int QLearningAgent::EpsilonGreedyPolicyRandom(std::list<State>::iterator agentstate){
     // O(actions^2)
+    // Selects greedy action with the probability = 1-e + (1-e / #ofactions)
+    // If some greedy actions are equal, selects randomly among them
     if(distribution(generator) > epsilon){
       //select max valued action
       return agentstate->GetMaxActionTypeRandom();
@@ -141,6 +147,8 @@ namespace qlearning{
 
   int QLearningAgent::EpsilonGreedyPolicyV2(std::list<State>::iterator agentstate){
     // O(actions^2)
+    // Selects greedy action with the probability = 1-e
+    // If some greedy actions are equal, selects randomly among them
     if(distribution(generator) > epsilon){
       //select max valued action
       return agentstate->GetMaxActionTypeRandom();
