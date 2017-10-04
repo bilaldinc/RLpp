@@ -22,12 +22,12 @@ int Test(qlearning::State state){
 
 int main() {
   std::cout << "hello world!" << '\n';
-  simplegridworld::GridWorld* world1p = new simplegridworld::GridWorld(50,0,0,49,49,0.1);
+  simplegridworld::GridWorld* world1p = new simplegridworld::GridWorld(10,0,0,9,9,0.1);
   std::unique_ptr<simplegridworld::GridWorld> world1(world1p);
 
   qlearning::QLearningAgent agent1(std::move(world1), 0.1, 0.99, 0.1);
 
-  agent1.Train(3000);
+  agent1.TrainV2(3000);
 
   std::list<qlearning::State>& qtable = agent1.GetQTable();
 

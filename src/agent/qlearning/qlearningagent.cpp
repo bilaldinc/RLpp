@@ -45,6 +45,66 @@ namespace qlearning{
     }
   }
 
+  void QLearningAgent::TrainRandom(int numberofepisode){
+    int episodecounter = 1;
+    //for each episode
+    while (episodecounter < numberofepisode){
+      //initial state & response
+      std::unique_ptr<rlinterface::State> currentenvironmentstate(environment->ObserveState());
+      std::list<State>::iterator currentagentstate = AddNewStateToQTable(currentenvironmentstate.get());
+      //counter for stepsize of each episode
+      int stepsizecounter = 0;
+      //for every step of the episode
+      while (!currentenvironmentstate->IsTerminal()){
+        //decide next action
+        int nextaction = EpsilonGreedyPolicyRandom(currentagentstate);
+        //execute nextaction, update current environment state known by agent, add new state to qtable
+        std::unique_ptr<rlinterface::Response> response(environment->TakeAnAction(nextaction));
+        currentenvironmentstate = response->GetState();
+        std::list<State>::iterator nextagentstate = AddNewStateToQTable(currentenvironmentstate.get());
+        //calculate and do the update
+        std::list<Action>::iterator currentq = currentagentstate->GetAction(nextaction);
+        double error = alpha*(response->GetReward() + gamma*(nextagentstate->GetMaxActionValue()) - currentq->GetValue());
+        currentq->SetValue(currentq->GetValue() + error);
+        // update agent current state
+        currentagentstate = nextagentstate;
+        stepsizecounter++;
+      }
+      episodecounter++;
+      std::cout << "episode : " <<episodecounter << "  stepsize : " << stepsizecounter <<'\n';
+    }
+  }
+
+  void QLearningAgent::TrainV2(int numberofepisode){
+    int episodecounter = 1;
+    //for each episode
+    while (episodecounter < numberofepisode){
+      //initial state & response
+      std::unique_ptr<rlinterface::State> currentenvironmentstate(environment->ObserveState());
+      std::list<State>::iterator currentagentstate = AddNewStateToQTable(currentenvironmentstate.get());
+      //counter for stepsize of each episode
+      int stepsizecounter = 0;
+      //for every step of the episode
+      while (!currentenvironmentstate->IsTerminal()){
+        //decide next action
+        int nextaction = EpsilonGreedyPolicyV2(currentagentstate);
+        //execute nextaction, update current environment state known by agent, add new state to qtable
+        std::unique_ptr<rlinterface::Response> response(environment->TakeAnAction(nextaction));
+        currentenvironmentstate = response->GetState();
+        std::list<State>::iterator nextagentstate = AddNewStateToQTable(currentenvironmentstate.get());
+        //calculate and do the update
+        std::list<Action>::iterator currentq = currentagentstate->GetAction(nextaction);
+        double error = alpha*(response->GetReward() + gamma*(nextagentstate->GetMaxActionValue()) - currentq->GetValue());
+        currentq->SetValue(currentq->GetValue() + error);
+        // update agent current state
+        currentagentstate = nextagentstate;
+        stepsizecounter++;
+      }
+      episodecounter++;
+      std::cout << "episode : " <<episodecounter << "  stepsize : " << stepsizecounter <<'\n';
+    }
+  }
+
   int QLearningAgent::EpsilonGreedyPolicy(std::list<State>::iterator agentstate){
     // O(actions)
     if(distribution(generator) > epsilon){
@@ -55,6 +115,41 @@ namespace qlearning{
     else{
       //select randomly among all actions
       std::list<int> actions = agentstate->GetPureState()->GetAvailableActions();
+      int count = (int)(distribution(generator) * actions.size());
+      std::list<int>::iterator it = actions.begin();
+      std::advance(it,count);
+      return *it;
+    }
+  }
+
+  int QLearningAgent::EpsilonGreedyPolicyRandom(std::list<State>::iterator agentstate){
+    // O(actions^2)
+    if(distribution(generator) > epsilon){
+      //select max valued action
+      return agentstate->GetMaxActionTypeRandom();
+
+    }
+    else{
+      //select randomly among all actions
+      std::list<int> actions = agentstate->GetPureState()->GetAvailableActions();
+      int count = (int)(distribution(generator) * actions.size());
+      std::list<int>::iterator it = actions.begin();
+      std::advance(it,count);
+      return *it;
+    }
+  }
+
+  int QLearningAgent::EpsilonGreedyPolicyV2(std::list<State>::iterator agentstate){
+    // O(actions^2)
+    if(distribution(generator) > epsilon){
+      //select max valued action
+      return agentstate->GetMaxActionTypeRandom();
+
+    }
+    else{
+      //select randomly among all nongreedy actions
+      std::list<int> actions = agentstate->GetPureState()->GetAvailableActions();
+      actions.erase(find(actions.begin(), actions.end(), agentstate->GetMaxActionTypeRandom()));
       int count = (int)(distribution(generator) * actions.size());
       std::list<int>::iterator it = actions.begin();
       std::advance(it,count);
@@ -79,6 +174,8 @@ namespace qlearning{
       return it;
     }
   }
+
+
 
   std::list<State>& QLearningAgent::GetQTable(){
     return qtable;

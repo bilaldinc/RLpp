@@ -13,6 +13,7 @@
 #include <list>
 #include <memory>
 #include <random>
+#include <limits>
 #include "../../../include/rlinterface/environment.h"
 #include "../../../include/rlinterface/state.h"
 #include "../../../include/rlinterface/response.h"
@@ -47,11 +48,15 @@ namespace qlearning{
     public:
       QLearningAgent(std::unique_ptr<rlinterface::Environment> environment, double alpha, double gamma, double epsilon);
       void Train(int numberofepisode);
+      void TrainRandom(int numberofepisode);
+      void TrainV2(int numberofepisode);
       std::list<State>& GetQTable();
       void SetAlpha(double alpha);
       void SetEpsilon(double epsilon);
 
       int EpsilonGreedyPolicy(std::list<State>::iterator agentstate);
+      int EpsilonGreedyPolicyRandom(std::list<State>::iterator agentstate);
+      int EpsilonGreedyPolicyV2(std::list<State>::iterator agentstate);
       std::list<State>::iterator AddNewStateToQTable(rlinterface::State* state);
 
   };

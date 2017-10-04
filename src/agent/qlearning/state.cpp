@@ -18,11 +18,14 @@
     This class is not tested yet
 */
 
-
 #include "../../../include/agent/qlearning/state.h"
-#include <iostream>
 
 namespace qlearning{
+
+  //initialize random number generator and distribution
+  std::random_device State::rd;
+  std::default_random_engine State::generator(rd());
+  std::uniform_real_distribution<double> State::distribution(0.0,1.0);
 
   State::State(std::unique_ptr<rlinterface::State> state) : state(std::move(state)){
     std::list<int> intactions = this->state->GetAvailableActions();
@@ -86,8 +89,37 @@ namespace qlearning{
   }
 
   int State::GetMaxActionType(){
+    // O(actions)
     std::list<Action>::iterator it = std::max_element(actions.begin(), actions.end());
     return it->GetType();
+  }
+
+  int State::GetMaxActionTypeRandom(){
+    // Random among equally maximum actions but computationally more expensive
+    // O(actions)
+    // Since clearing the list iterate for deletion of objects it is linear
+    // O(actions*2)
+
+    std::list<int> maxlist;
+    double max = std::numeric_limits<double>::min();
+
+    for(auto i: actions){
+      if(i.GetValue() > max){
+        max = i.GetValue();
+        maxlist.clear();
+        maxlist.push_back(i.GetType());
+      }
+      else if(i.GetValue() == max){
+        maxlist.push_back(i.GetType());
+      }
+      else{
+        // Do nothing
+      }
+    }
+    int count = (int)(distribution(generator) * maxlist.size());
+    std::list<int>::iterator it = maxlist.begin();
+    std::advance(it,count);
+    return *it;
   }
 
   std::list<Action>::iterator State::GetAction(int type){
