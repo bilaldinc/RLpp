@@ -21,7 +21,7 @@ namespace ballcatching{
   class BallCatchingWorld : public rlinterface::Environment {
 
     public:
-      BallCatchingWorld(int size, int ball_direction, double reward, double punishment);
+      BallCatchingWorld(int size, int ball_direction, double reward, double punishment, int start_ball_x, int start_ball_y,int start_agent_x, int start_agent_y);
       rlinterface::State* ObserveState();
       rlinterface::Response* TakeAnAction(int type);
       void SetBallDirection(int ball_direction);
@@ -37,7 +37,13 @@ namespace ballcatching{
       int current_ball_y;
       int current_agent_x;
       int current_agent_y;
+      int start_ball_x;
+      int start_ball_y;
+      int start_agent_x;
+      int start_agent_y;
       int Mod(int a, int b);
+      std::vector<int> x_without_ball;
+      std::vector<int> y_without_ball;
       //random number generator and distribution
       static std::random_device rd;
       static std::default_random_engine generator;

@@ -2,7 +2,7 @@
     @file gridstate,cpp
     @author Bilal Dinc
     @date 1.0 23/10/2017
-    @brief 
+    @brief
 */
 
 #include "../../../include/environment/ballcatching/toroidalstate.h"
@@ -32,7 +32,8 @@ namespace ballcatching{
 
     bool t1 = s2.GetX() == this->GetX();
     bool t2 = s2.GetY() == this->GetY();
-    return t1 && t2;
+    bool t3 = s2.IsTerminal() == this->IsTerminal();
+    return t1 && t2 && t3;
   }
 
   bool ToroidalState::IsTerminal(){
