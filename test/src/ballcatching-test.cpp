@@ -42,15 +42,17 @@ int main() {
   // }
 
 
-  ballcatching::BallCatchingWorld* world1p = new ballcatching::BallCatchingWorld(15,0,10,-1,9,9,1,1);
-  std::unique_ptr<ballcatching::BallCatchingWorld> world1(world1p);
-  qlearning::QLearningAgent agent1(std::move(world1), 0.1, 1, 0.1);
-  //agent1.Train(40000);
+  // ballcatching::BallCatchingWorld* world1p = new ballcatching::BallCatchingWorld(15,0,10,-1,9,9,-1,-1);
+  // std::unique_ptr<ballcatching::BallCatchingWorld> world1(world1p);
+  // qlearning::QLearningAgent agent1(std::move(world1), 0.1, 1, 0.1);
+  // agent1.Train(40000);
+  // agent1.SetEpsilon(0);
+  // agent1.Train(50);
 
-  simplegridworld::GridWorld* world2p = new simplegridworld::GridWorld(10,0,0,9,9,1);
+  simplegridworld::GridWorld* world2p = new simplegridworld::GridWorld(10,9,9,0,0,1);
   std::unique_ptr<simplegridworld::GridWorld> world2(world2p);
   qlearning::QLearningAgent agent2(std::move(world2), 0.1, 0.99, 0.1);
-  agent1.Train(3000);
+  agent2.TrainRandom(1000);
 
   std::cout << "end of the program" << '\n';
 
