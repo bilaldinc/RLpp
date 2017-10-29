@@ -1,5 +1,5 @@
 /*
-	scd
+scd
 */
 
 #ifndef _Q_STATE_INCLUDED
@@ -31,7 +31,7 @@ namespace ql_scd {
 		rlinterface::State* GetPureState() const;
 		bool operator == (const State& s);
 
-
+		
 	private:
 		std::list<Action> actions;
 		std::unique_ptr<rlinterface::State> state;

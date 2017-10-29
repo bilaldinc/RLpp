@@ -85,7 +85,7 @@ namespace ql_scd {
 		// O(actions*2)
 
 		std::list<int> maxlist;
-		double max = std::numeric_limits<double>::min();
+		double max = -std::numeric_limits<double>::max();
 
 		for(auto i: actions){
 			if(i.GetValue() > max){
