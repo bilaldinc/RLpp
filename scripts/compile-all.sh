@@ -3,7 +3,7 @@
 ./compile-rlinterface.sh
 ./compile-simplegrid.sh
 ./compile-qlearning.sh
-./compile-qlearning-scd.sh
+./compile-ql-scd.sh
 ./compile-ballcatching.sh
 
 
