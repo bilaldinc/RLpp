@@ -33,6 +33,8 @@ namespace ql_scd {
 		double threshold;
 		int buffersize;
 
+		int action_count_total = 0;
+
 		//qtable
 		std::list<State> qtable;
 
@@ -44,6 +46,7 @@ namespace ql_scd {
 	public:
 		QL_SCD_Agent(std::unique_ptr<rlinterface::Environment> environment, double alpha, double gamma, double epsilon);
 		void socketConnection(int portNo);
+		void closeSocket();
 		void Train(int numberofepisode);
 		void TrainRandom(int numberofepisode);
 		void TrainV2(int numberofepisode);

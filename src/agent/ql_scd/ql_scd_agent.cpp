@@ -4,6 +4,7 @@
 
 #include "../../../include/agent/ql_scd/ql_scd_agent.h"
 #include <sys/socket.h>
+#include <sys/ioctl.h>
 #include <netinet/in.h>
 #include <netdb.h>
 #include <sys/types.h>
@@ -48,6 +49,10 @@ namespace ql_scd {
 		else {
 			std::cout << "Connection successful." << std::endl;
 		}
+	}
+
+	void QL_SCD_Agent::closeSocket () {
+		close(listenFd);
 	}
 
 	void QL_SCD_Agent::Train(int numberofepisode){
@@ -127,48 +132,84 @@ namespace ql_scd {
 		std::cout << "total steps: " << total_step_size_counter << std::endl;
 	}
 
-	void QL_SCD_Agent::TrainV2(int numberofepisode){
-		// Uses EpsilonGreedyPolicyV2 function. See function implementation
-		int episodecounter = 1;
-		int total_step_size_counter = 1;
+	void QL_SCD_Agent::TrainV2 (int number_of_episodes) {
+
+		int episode_count = 1;
+		int action_count_in_task = 0;
+		int action_count_in_episode = 0;
+		int ack_count = 0;
 		char token;
-		//for each episode
-		while (episodecounter < numberofepisode){
-			//initial state & response
-			std::unique_ptr<rlinterface::State> currentenvironmentstate(environment->ObserveState());
-			std::list<State>::iterator currentagentstate = AddNewStateToQTable(currentenvironmentstate.get());
-			//counter for stepsize of each episode
-			int stepsizecounter = 0;
-			//for every step of the episode
-			while (!currentenvironmentstate->IsTerminal()){
-				//decide next action
-				int nextaction = EpsilonGreedyPolicyV2(currentagentstate);
-				token = nextaction + '0';
+		char acknowledgement;
+
+		// episode loop
+		while (episode_count < number_of_episodes) {
+
+			// initial state & response
+			std::unique_ptr <rlinterface::State> currentenvironmentstate(environment->ObserveState());
+			std::list <State>::iterator currentagentstate = AddNewStateToQTable(currentenvironmentstate.get());
+
+			int action_count_in_episode = 0;
+
+			// action loop
+			while (!currentenvironmentstate->IsTerminal()) {
+
+				// decide next action
+				int next_action = EpsilonGreedyPolicyV2(currentagentstate);
+				action_count_total++;
+
+				// send to scd
+				token = next_action + '0';
 				write(listenFd, &token, sizeof(token));
-				//execute nextaction, update current environment state known by agent, add new state to qtable
-				std::unique_ptr<rlinterface::Response> response(environment->TakeAnAction(nextaction));
+
+				// get acknowledgement
+				read(listenFd, &acknowledgement, 1);
+				ack_count++;
+
+				// if there is a notification
+				if (acknowledgement == '1') {
+					std::cout << "  >> notification_received at " << action_count_total << std::endl;
+					SetEpsilon(0.3);
+					std::cout << "     epsilon is set to: 0.3" << std::flush << std::endl;
+				}
+
+				// execute next_action, update current environment state known by agent, add new state to qtable
+				std::unique_ptr <rlinterface::Response> response(environment->TakeAnAction(next_action));
 				currentenvironmentstate = response->GetState();
-				std::list<State>::iterator nextagentstate = AddNewStateToQTable(currentenvironmentstate.get());
-				//calculate and do the update
-				std::list<Action>::iterator currentq = currentagentstate->GetAction(nextaction);
-				double error = alpha*(response->GetReward() + gamma*(nextagentstate->GetMaxActionValue()) - currentq->GetValue());
+				std::list <State>::iterator nextagentstate = AddNewStateToQTable(currentenvironmentstate.get());
+
+				// calculate and do the update
+				std::list <Action>::iterator currentq = currentagentstate->GetAction(next_action);
+				double error = alpha * (response->GetReward() + gamma*(nextagentstate->GetMaxActionValue()) - currentq->GetValue());
 				currentq->SetValue(currentq->GetValue() + error);
+
 				// update agent current state
 				currentagentstate = nextagentstate;
-				stepsizecounter++;
+				action_count_in_episode++;
+
 			}
-			std::cout << "episode : " <<episodecounter << "  stepsize : " << stepsizecounter <<'\n';
+
+			if (episode_count % 10000 == 0) {
+				std::cout << "episode_count: " << episode_count << " | action_count_in_episode: " << action_count_in_episode <<'\n';
+			}
+
+			// decrease epsilon by a factor
 			DecreaseEpsilon(0.995);
-			episodecounter++;
-			total_step_size_counter += stepsizecounter;
+
+			// increments
+			episode_count++;
+			action_count_in_task += action_count_in_episode;
+
 		}
-		std::cout << "total steps: " << total_step_size_counter << std::endl;
+
+		std::cout << "task ended | action_count_total: " << action_count_total << std::endl;
+
 	}
 
 	void QL_SCD_Agent::TerminateLearning () {
 		char token;
 		token = 'x';
 		write(listenFd, &token, 1);
+		close(listenFd);
 	}
 
 	int QL_SCD_Agent::EpsilonGreedyPolicy(std::list<State>::iterator agentstate){
