@@ -30,10 +30,10 @@ int main() {
 
 	ql_scd::QL_SCD_Agent agent1(std::move(world1), 0.1, 0.99, 0.3);
 	agent1.socketConnection(20000);
-	agent1.TrainV2(5000);
-	agent1.SetEnvironment(std::move(world2));
+	agent1.TrainV2(3000);
+	// agent1.SetEnvironment(std::move(world2));
 	// agent1.SetEpsilon(0.3);
-	agent1.TrainV2(5000);
+	// agent1.TrainV2(5000);
 	agent1.TerminateLearning();
 
 	// std::list<ql_scd::State>& qtable = agent1.GetQTable();

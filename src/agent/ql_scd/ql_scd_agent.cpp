@@ -165,13 +165,6 @@ namespace ql_scd {
 				read(listenFd, &acknowledgement, 1);
 				ack_count++;
 
-				// if there is a notification
-				if (acknowledgement == '1') {
-					std::cout << "  >> notification_received at " << action_count_total << std::endl;
-					SetEpsilon(0.3);
-					std::cout << "     epsilon is set to: 0.3" << std::flush << std::endl;
-				}
-
 				// execute next_action, update current environment state known by agent, add new state to qtable
 				std::unique_ptr <rlinterface::Response> response(environment->TakeAnAction(next_action));
 				currentenvironmentstate = response->GetState();
@@ -181,6 +174,15 @@ namespace ql_scd {
 				std::list <Action>::iterator currentq = currentagentstate->GetAction(next_action);
 				double error = alpha * (response->GetReward() + gamma*(nextagentstate->GetMaxActionValue()) - currentq->GetValue());
 				currentq->SetValue(currentq->GetValue() + error);
+
+				// if there is a notification
+				if (acknowledgement == '1') {
+					std::cout << "  >> notification_received at " << action_count_total << std::endl;
+					SetEpsilon(0.3);
+					std::cout << "     epsilon is set to: 0.3" << std::flush << std::endl;
+					// ClearQTable();
+					// std::cout << "     Q-Table cleared." << std::flush << std::endl;
+				}
 
 				// update agent current state
 				currentagentstate = nextagentstate;
@@ -288,6 +290,10 @@ namespace ql_scd {
 
 	std::list<State>& QL_SCD_Agent::GetQTable(){
 		return qtable;
+	}
+
+	void QL_SCD_Agent::ClearQTable () {
+		qtable.clear();
 	}
 
 	void QL_SCD_Agent::SetAlpha(double alpha){

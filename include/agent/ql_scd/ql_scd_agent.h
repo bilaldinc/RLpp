@@ -51,6 +51,7 @@ namespace ql_scd {
 		void TrainRandom(int numberofepisode);
 		void TrainV2(int numberofepisode);
 		std::list<State>& GetQTable();
+		void ClearQTable();
 		void SetAlpha(double alpha);
 		void SetEpsilon(double epsilon);
 		void DecreaseEpsilon(double factor);
