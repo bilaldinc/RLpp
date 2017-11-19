@@ -197,4 +197,8 @@ namespace qlearning{
     this->epsilon = epsilon;
   }
 
+  void QLearningAgent::SetEnvironment(std::unique_ptr<rlinterface::Environment> environment) {
+      this->environment = std::move(environment);
+  }
+
 }

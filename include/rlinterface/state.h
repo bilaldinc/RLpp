@@ -9,6 +9,7 @@
 #define _RL_STATE_H_INCLUDED
 
 #include <list>
+#include <string>
 
 namespace rlinterface{
 
@@ -16,6 +17,7 @@ namespace rlinterface{
 
     public:
         virtual std::list<int> GetAvailableActions() = 0;
+        virtual std::string ToString() = 0;
         virtual bool IsTerminal() = 0;
         virtual bool operator == (const State& s) = 0;
         virtual State* clone() = 0;

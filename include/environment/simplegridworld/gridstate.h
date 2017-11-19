@@ -23,6 +23,7 @@ namespace simplegridworld{
       rlinterface::State* clone();
       int GetX() const;
       int GetY() const;
+      std::string ToString();
 
     private:
       int x, y;

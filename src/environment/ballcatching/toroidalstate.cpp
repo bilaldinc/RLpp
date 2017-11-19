@@ -52,4 +52,8 @@ namespace ballcatching{
     return this->y;
   }
 
+  std::string ToroidalState::ToString(){
+      return "(" + std::to_string(this->x) + "," + std::to_string(this->y) + ")";
+  }
+
 }

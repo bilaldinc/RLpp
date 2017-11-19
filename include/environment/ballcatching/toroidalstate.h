@@ -2,7 +2,7 @@
     @file gridstate,h
     @author Bilal Dinc
     @date 1.0 23/10/2017
-    @brief 
+    @brief
 */
 #ifndef _TOROIDALSTATE_H_INCLUDED
 #define _TOROIDALSTATE_H_INCLUDED
@@ -23,6 +23,7 @@ namespace ballcatching{
       rlinterface::State* clone();
       int GetX() const;
       int GetY() const;
+      std::string ToString();
 
     private:
       int x, y;

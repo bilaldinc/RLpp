@@ -53,6 +53,7 @@ namespace qlearning{
       std::list<State>& GetQTable();
       void SetAlpha(double alpha);
       void SetEpsilon(double epsilon);
+      void SetEnvironment(std::unique_ptr<rlinterface::Environment> environment);
 
       int EpsilonGreedyPolicy(std::list<State>::iterator agentstate);
       int EpsilonGreedyPolicyRandom(std::list<State>::iterator agentstate);

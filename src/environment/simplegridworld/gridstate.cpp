@@ -51,4 +51,8 @@ namespace simplegridworld{
     return this->y;
   }
 
+  std::string GridState::ToString(){
+      return "(" + std::to_string(this->x) + "," + std::to_string(this->y) + ")";
+  }
+
 }
