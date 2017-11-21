@@ -31,8 +31,9 @@ namespace simplegridworld{
 
     bool t1 = s2.GetX() == this->GetX();
     bool t2 = s2.GetY() == this->GetY();
-    bool t3 = s2.IsTerminal() == this->IsTerminal();
-    return t1 && t2 && t3;
+    bool t3 = s2.IsTerminal();
+    bool t4 = this->IsTerminal();
+    return (t1 && t2) || (t3 && t4);
   }
 
   bool GridState::IsTerminal(){

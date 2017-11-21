@@ -5,7 +5,7 @@
     @brief implementation of qlearning algirithm
 
     action silme isini duzelt.
-    terminal state 1 tane (yap kesin yap)
+    terminal state 1 tane (yap kesin yap) DONE
     episodelog
     conditional log
 
