@@ -74,7 +74,7 @@ namespace prioritizedsweeping{
         std::list<StateM> state_list;
 
     public:
-        UpdateError UpdateModel(ExperienceTuple exp);
+        UpdateError UpdateModel(ExperienceTuple exp,bool update);
         double GetRewardEstimate(rlinterface::State *state, int action, rlinterface::State *next_state);
         double GetRewardEstimate(rlinterface::State *state, int action);
         double GetTrasitionEstimate(rlinterface::State *state,int action, rlinterface::State *next_state);

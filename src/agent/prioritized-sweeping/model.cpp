@@ -4,9 +4,7 @@
     @date 1.0 18/11/2017
     @brief
 
-    Notes. Line 71.
-    Decide new comming states error
-    For now it is assummed to be (new value - 0). It could be changed with 0
+
 */
 
 #include <iostream>
@@ -22,7 +20,7 @@
 
 namespace prioritizedsweeping{
 
-    UpdateError Model::UpdateModel(ExperienceTuple exp){
+    UpdateError Model::UpdateModel(ExperienceTuple exp,bool update){
         UpdateError error;
 
         //find the specified state
@@ -47,9 +45,12 @@ namespace prioritizedsweeping{
             it2--;
         }
         // increase counter, calculate error, update reward estimate
-        it2->state_action_counter ++;
-        error.reward_error = (exp.reward - it2->reward_estimate) / it2->state_action_counter;
-        it2->reward_estimate += error.reward_error;
+        error.reward_error = (exp.reward - it2->reward_estimate) / (it2->state_action_counter + 1);
+        if(update){
+            it2->state_action_counter ++;
+            it2->reward_estimate += error.reward_error;
+        }
+
         //find next state
         bool founded = false;
         std::unique_ptr<rlinterface::State> t2(exp.next_state->clone());
@@ -57,27 +58,42 @@ namespace prioritizedsweeping{
         for(std::list<NextState>::iterator it3 = it2->next_state_list.begin(); it3 != it2->next_state_list.end(); ++it3){
             if(*it3 == search_object2){
                 founded = true;
-                it3->state_action_nextstate_counter ++;
-                it3->reward_estimate += (exp.reward - it3->reward_estimate) / it3->state_action_nextstate_counter;
+                if(update){
+                    it3->state_action_nextstate_counter ++;
+                    it3->reward_estimate += (exp.reward - it3->reward_estimate) / it3->state_action_nextstate_counter;
+                }
                 // calculate propbability error, update, add error to error list
                 double probability_error = 1 - it3->probability ;
-                it3->probability += probability_error / it2->state_action_counter;
+                if(update){
+                    it3->probability += probability_error / it2->state_action_counter;
+                }
                 error.transition_errors.push_back(probability_error);
             }
             else{
                 // calculate propbability error, update, add error to the error list
                 double probability_error = 0 - it3->probability;
-                it3->probability += probability_error / it2->state_action_counter;
+                if(update){
+                    it3->probability += probability_error / it2->state_action_counter;
+                }
                 error.transition_errors.push_back(probability_error);
             }
         }
         if(founded == false){
             // next_state is not in the model
-            search_object2.reward_estimate = exp.reward;
-            search_object2.state_action_nextstate_counter = 1;
-            search_object2.probability = 1.0 / it2->state_action_counter;
-            it2->next_state_list.push_back(search_object2);
-            error.transition_errors.push_back(0 - (1.0 / it2->state_action_counter));
+            if(update){
+                search_object2.reward_estimate = exp.reward;
+                search_object2.state_action_nextstate_counter = 1;
+                search_object2.probability = 1.0 / it2->state_action_counter;
+                it2->next_state_list.push_back(search_object2);
+                error.transition_errors.push_back(1.0 - 0);
+            }
+            else{
+                search_object2.reward_estimate = 0;
+                search_object2.state_action_nextstate_counter = 0;
+                search_object2.probability = 0;
+                it2->next_state_list.push_back(search_object2);
+                error.transition_errors.push_back(1.0 - 0);
+            }
         }
 
         return error;

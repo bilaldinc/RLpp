@@ -4,11 +4,9 @@
     @date 1.0 24/09/2017
     @brief implementation of qlearning algirithm
 
-    action silme isini duzelt.
     model probabilitylele dogru calisiyormu test et. DONE
     yapiyi degistir agent icin base class yaz
-    context detection ekl;e
-    simple prob. mdp
+    context detection ekle
     terminal state 1 tane (yap kesin yap) DONE
     episodelog  DONE
     conditional log DONE
@@ -46,7 +44,7 @@ namespace prioritizedsweeping{
                 std::list<State>::iterator nextagentstate = AddNewStateToQTable(currentenvironmentstate.get());
                 // update model
                 ExperienceTuple experience_tuple(currentagentstate->GetPureState(),nextaction,nextagentstate->GetPureState(),response->GetReward());
-                model.UpdateModel(experience_tuple);
+                model.UpdateModel(experience_tuple,true);
                 LogModel((episodecounter+total_episode_count),stepsizecounter);
                 LogExperience((episodecounter+total_episode_count),stepsizecounter,experience_tuple);
                 // calculate the error
@@ -162,7 +160,6 @@ namespace prioritizedsweeping{
     void PrioritizedSweepingAgent::SetEpsilon(double epsilon){
         this->epsilon = epsilon;
     }
-
     void PrioritizedSweepingAgent::SetEnvironment(std::unique_ptr<rlinterface::Environment> environment) {
         this->environment = std::move(environment);
     }
@@ -186,7 +183,6 @@ namespace prioritizedsweeping{
             file2.close();
         }
     }
-
     void PrioritizedSweepingAgent::LogQtable(int episode, int step, int plan){
         if(log_qtable){
             std::string filename = log_name + "/qtable/qtable_e" + std::to_string(episode) + "_s" + std::to_string(step) + "_p" + std::to_string(plan);
@@ -200,7 +196,6 @@ namespace prioritizedsweeping{
             file.close();
             }
     }
-
     void PrioritizedSweepingAgent::LogExperience(int episode, int step, ExperienceTuple &tuple){
         if(log_experience){
           if(step == 0){
@@ -211,14 +206,12 @@ namespace prioritizedsweeping{
           expfile << std::to_string(step) + " - [" + tuple.state->ToString() + "," + std::to_string(tuple.action) + "," + tuple.next_state->ToString() + "," + std::to_string(tuple.reward) + "]" + "\n";
         }
     }
-
     void PrioritizedSweepingAgent::LogHistory(int episode, int step){
         if(log_history){
             std::string filename = log_name + "/history" + std::to_string(episode) + "_s" + std::to_string(step);
             historyfile << "episode : " <<episode << "  stepsize : " << step <<'\n';
         }
     }
-
     void PrioritizedSweepingAgent::InitiateLogsFiles(){
         // platform dependent code
         // creates necessary directories, if exists clears its content.
@@ -265,7 +258,6 @@ namespace prioritizedsweeping{
         }
 
     }
-
     void PrioritizedSweepingAgent::CloseLogsFiles(){
         if(log_history){
             historyfile.close();
