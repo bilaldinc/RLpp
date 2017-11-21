@@ -29,11 +29,10 @@ namespace simplegridworld{
   bool GridState::operator == (const State& s){
     GridState& s2 = ((GridState&)s);
 
-    bool t1 = s2.GetX() == this->GetX();
-    bool t2 = s2.GetY() == this->GetY();
-    bool t3 = s2.IsTerminal();
-    bool t4 = this->IsTerminal();
-    return (t1 && t2) || (t3 && t4);
+    bool eq = (s2.GetX() == this->GetX()) && (s2.GetY() == this->GetY());
+    bool t1 = s2.IsTerminal();
+    bool t2 = this->IsTerminal();
+    return (t1 && t2) || (eq && !t1 && !t2);
   }
 
   bool GridState::IsTerminal(){
@@ -53,7 +52,12 @@ namespace simplegridworld{
   }
 
   std::string GridState::ToString(){
-      return "(" + std::to_string(this->x) + "," + std::to_string(this->y) + ")";
+      if(terminal){
+          return "(term)";
+      }
+      else{
+          return "(" + std::to_string(this->x) + "," + std::to_string(this->y) + ")";
+      }
   }
 
 }

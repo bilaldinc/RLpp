@@ -7,6 +7,8 @@ g++ src/ps-test.cpp \
 ../build/rlinterface/response.o \
 ../build/environment/simplegridworld/gridstate.o \
 ../build/environment/simplegridworld/gridworld.o \
+../build/environment/ballcatching/ballcatchingworld.o \
+../build/environment/ballcatching/toroidalstate.o \
 ../build/agent/prioritized-sweeping/state.o \
 ../build/agent/prioritized-sweeping/action.o \
 ../build/agent/prioritized-sweeping/model.o \

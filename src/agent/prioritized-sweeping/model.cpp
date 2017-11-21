@@ -60,14 +60,14 @@ namespace prioritizedsweeping{
                 it3->state_action_nextstate_counter ++;
                 it3->reward_estimate += (exp.reward - it3->reward_estimate) / it3->state_action_nextstate_counter;
                 // calculate propbability error, update, add error to error list
-                const double probability_error = 1 - it3->probability ;
-                it3->probability += probability_error / it3->state_action_nextstate_counter;
+                double probability_error = 1 - it3->probability ;
+                it3->probability += probability_error / it2->state_action_counter;
                 error.transition_errors.push_back(probability_error);
             }
             else{
                 // calculate propbability error, update, add error to the error list
-                const double probability_error = 0 - it3->probability;
-                it3->probability += probability_error / it3->state_action_nextstate_counter;
+                double probability_error = 0 - it3->probability;
+                it3->probability += probability_error / it2->state_action_counter;
                 error.transition_errors.push_back(probability_error);
             }
         }
@@ -75,9 +75,9 @@ namespace prioritizedsweeping{
             // next_state is not in the model
             search_object2.reward_estimate = exp.reward;
             search_object2.state_action_nextstate_counter = 1;
-            search_object2.probability = 1 / it2->state_action_counter;
+            search_object2.probability = 1.0 / it2->state_action_counter;
             it2->next_state_list.push_back(search_object2);
-            error.transition_errors.push_back(0 - (1 / it2->state_action_counter));
+            error.transition_errors.push_back(0 - (1.0 / it2->state_action_counter));
         }
 
         return error;

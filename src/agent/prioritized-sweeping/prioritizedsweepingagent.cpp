@@ -5,9 +5,13 @@
     @brief implementation of qlearning algirithm
 
     action silme isini duzelt.
+    model probabilitylele dogru calisiyormu test et. DONE
+    yapiyi degistir agent icin base class yaz
+    context detection ekl;e
+    simple prob. mdp
     terminal state 1 tane (yap kesin yap) DONE
-    episodelog
-    conditional log
+    episodelog  DONE
+    conditional log DONE
 
 */
 
