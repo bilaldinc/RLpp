@@ -18,6 +18,10 @@
 #include <cmath>
 #include <queue>
 #include <string>
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/wait.h>
 #include "../../../include/rlinterface/environment.h"
 #include "../../../include/rlinterface/state.h"
 #include "../../../include/rlinterface/response.h"
@@ -63,19 +67,41 @@ namespace prioritizedsweeping{
         std::default_random_engine generator = std::default_random_engine(rd());
         std::uniform_real_distribution<double> distribution = std::uniform_real_distribution<double>(0.0,1.0);
 
+        //log parameters
+        bool log_model;
+        bool log_qtable;
+        bool log_experience;
+        bool log_history;
+        std::string log_name;
+        std::ofstream historyfile;
+        std::ofstream expfile;
+        int total_episode_count;
+        bool log_directory_created;
+
+        // internal functions
+        int EpsilonGreedyPolicy(std::list<State>::iterator agentstate);
+        std::list<State>::iterator AddNewStateToQTable(rlinterface::State* state);
+
+
     public:
-        PrioritizedSweepingAgent(std::unique_ptr<rlinterface::Environment> environment, double gamma, double epsilon, double planning_limit, double priority_threshold);
+        PrioritizedSweepingAgent(std::unique_ptr<rlinterface::Environment> environment, double gamma, double epsilon, double planning_limit, double priority_threshold, std::string log_name);
         void Train(int numberofepisode);
         void SetAlpha(double alpha);
         void SetEpsilon(double epsilon);
         void SetEnvironment(std::unique_ptr<rlinterface::Environment> environment);
-
-        int EpsilonGreedyPolicy(std::list<State>::iterator agentstate);
-        std::list<State>::iterator AddNewStateToQTable(rlinterface::State* state);
-
         std::list<State>& GetQTable();
+
+        // logging funtions
         void LogModel(int episode, int step);
         void LogQtable(int episode, int step, int plan);
+        void LogExperience(int episode, int step, ExperienceTuple &tuple);
+        void LogHistory(int episode, int step);
+        void SetLogModel(bool x);
+        void SetLogQtable(bool x);
+        void SetLogExperience(bool x);
+        void SetLogHistory(bool x);
+        void InitiateLogsFiles();
+        void CloseLogsFiles();
 
   };
 
