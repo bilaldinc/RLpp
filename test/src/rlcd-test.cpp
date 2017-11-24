@@ -22,14 +22,24 @@ int main() {
     std::cout << "hello world!" << '\n';
     std::string filename = "logs";
 
-    int size = 5;
-    int initialX = 0;
-    int initialY = 0;
-    int terminalX = 4;
-    int terminalY = 4;
+    int size = 10;
+    int initialX = 9;
+    int initialY = 9;
+    int terminalX = 0;
+    int terminalY = 0;
     double reward = 1;
     simplegridworld::GridWorld* world1p = new simplegridworld::GridWorld(size,initialX,initialY,terminalX,terminalY,reward);
     std::unique_ptr<simplegridworld::GridWorld> world1(world1p);
+
+    size = 10;
+    initialX = 0;
+    initialY = 0;
+    terminalX = 9;
+    terminalY = 9;
+    reward = 1;
+    world1p = new simplegridworld::GridWorld(size,initialX,initialY,terminalX,terminalY,reward);
+    std::unique_ptr<simplegridworld::GridWorld> world2(world1p);
+
 
     size = 15;
     int ball_direction = 0;
@@ -42,29 +52,29 @@ int main() {
     ballcatching::BallCatchingWorld* world2p = new ballcatching::BallCatchingWorld(size,0,reward,punishment,start_ball_x,start_ball_y,start_agent_x,start_agent_y);
     std::unique_ptr<ballcatching::BallCatchingWorld> ballcatchingR(world2p);
 
-    world2p = new ballcatching::BallCatchingWorld(size,1,reward,punishment,start_ball_x,start_ball_y,start_agent_x,start_agent_y);
-    std::unique_ptr<ballcatching::BallCatchingWorld> ballcatchingL(world2p);
+    world2p = new ballcatching::BallCatchingWorld(size,2,reward,punishment,start_ball_x,start_ball_y,start_agent_x,start_agent_y);
+    std::unique_ptr<ballcatching::BallCatchingWorld> ballcatchingU(world2p);
 
 
     double gamma = 0.95;
     double epsilon = 0.1;
     double planning_limit = 10;
     double priority_threshold = 0.00000001;
-    int M = 20;
+    int M = 50;
     double Emin = -0.1;
-    double p = 0.1;
+    double p = 1;
     double omega = 0;
-    double Rmax = 10;
-    double Rmin = -1;
-    rlcd::RLCDAgent agent1(std::move(ballcatchingR), gamma, epsilon, planning_limit, priority_threshold,filename,M,Emin,p,omega,Rmax,Rmin);
+    double Rmax = 1;
+    double Rmin = 0;
+    rlcd::RLCDAgent agent1(std::move(world1), gamma, epsilon, planning_limit, priority_threshold,filename,M,Emin,p,omega,Rmax,Rmin);
 
     agent1.SetLogModel(true);
     // agent1.SetLogQtable(true);
-    // agent1.SetLogExperience(true);
+    agent1.SetLogExperience(true);
     agent1.SetLogErrors(true);
     agent1.SetLogHistory(true);
     agent1.Train(200);
-    agent1.SetEnvironment(std::move(ballcatchingL));
+    agent1.SetEnvironment(std::move(world2));
      std::cout << "---Environment is changed---" << '\n';
     agent1.Train(200);
     // std::cout << "--- Epsilon 0 ---" << '\n';

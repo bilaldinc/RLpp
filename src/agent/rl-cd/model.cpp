@@ -226,7 +226,7 @@ namespace rlcd{
         double emR = 1 - (2 * (1 / (Rmax - Rmin)) *pow(err.reward_error,2));
         double emT = 0;
         for(std::list<double>::iterator it = err.transition_errors.begin(); it != err.transition_errors.end(); ++it){
-            emT =+ pow(*it,2);
+            emT += pow(*it,2);
         }
         emT = 1 - emT;
 
