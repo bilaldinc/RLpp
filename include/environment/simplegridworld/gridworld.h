@@ -9,6 +9,10 @@
 
 #include <list>
 #include <iostream>
+#include <string.h>
+#include <fstream>
+#include <sstream>
+#include <vector>
 #include "gridstate.h"
 #include "../../../include/rlinterface/environment.h"
 #include "../../../include/rlinterface/state.h"
@@ -20,6 +24,7 @@ namespace simplegridworld{
 
     public:
       GridWorld(int size, int initialX, int initialY, int terminalX, int terminalY, double reward);
+      GridWorld(std::string mapName);
       rlinterface::State* ObserveState();
       rlinterface::Response* TakeAnAction(int type);
 
@@ -29,6 +34,9 @@ namespace simplegridworld{
       int terminalX, terminalY;
       int size;
       double reward;
+      std::string mapName;
+      std::vector< std::vector<char>> map_matrix;
+      char intToHex(int i);
   };
 
 }
