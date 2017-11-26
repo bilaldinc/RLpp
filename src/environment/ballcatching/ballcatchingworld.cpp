@@ -162,8 +162,8 @@ namespace ballcatching{
                       temp_list_y.push_back(i);
                   }
               }
-              int random_start_ball_x = (int)(distribution(generator) * size-1);
-              int random_start_ball_y = (int)(distribution(generator) * size-1);
+              int random_start_ball_x = (int)(distribution(generator) * (size-1));
+              int random_start_ball_y = (int)(distribution(generator) * (size-1));
               current_ball_x = temp_list_x.at(random_start_ball_x);
               current_ball_y = temp_list_x.at(random_start_ball_y);
 
@@ -179,8 +179,8 @@ namespace ballcatching{
                       temp_list_y.push_back(i);
                   }
               }
-              int random_start_agent_x = (int)(distribution(generator) * size-1);
-              int random_start_agent_y = (int)(distribution(generator) * size-1);
+              int random_start_agent_x = (int)(distribution(generator) * (size-1));
+              int random_start_agent_y = (int)(distribution(generator) * (size-1));
               current_agent_x = temp_list_x.at(random_start_agent_x);
               current_agent_y = temp_list_x.at(random_start_agent_y);
               }
@@ -197,8 +197,8 @@ namespace ballcatching{
                       temp_list_y.push_back(i);
                   }
               }
-              int random_start_ball_x = (int)(distribution(generator) * size-1);
-              int random_start_ball_y = (int)(distribution(generator) * size-1);
+              int random_start_ball_x = (int)(distribution(generator) * (size-1));
+              int random_start_ball_y = (int)(distribution(generator) * (size-1));
               current_ball_x = temp_list_x.at(random_start_ball_x);
               current_ball_y = temp_list_x.at(random_start_ball_y);
           }

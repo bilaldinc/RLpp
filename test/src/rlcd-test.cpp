@@ -2,6 +2,7 @@
 #include <vector>
 #include <memory>
 #include <list>
+#include <limits>
 #include <algorithm>
 
 #include "../../include/environment/ballcatching/toroidalstate.h"
@@ -45,8 +46,8 @@ int main() {
     int ball_direction = 0;
     reward = 10;
     double punishment = -1;
-    int start_ball_x = 5;
-    int start_ball_y = 5;
+    int start_ball_x = -1;
+    int start_ball_y = -1;
     int start_agent_x = -1;
     int start_agent_y = -1;
     ballcatching::BallCatchingWorld* world2p = new ballcatching::BallCatchingWorld(size,0,reward,punishment,start_ball_x,start_ball_y,start_agent_x,start_agent_y);
@@ -57,26 +58,26 @@ int main() {
 
 
     double gamma = 0.95;
-    double epsilon = 0.1;
+    double epsilon = 1;
     double planning_limit = 10;
     double priority_threshold = 0.00000001;
-    int M = 8;
+    int M = std::numeric_limits<int>::max();
     double Emin = -0.1;
     double p = 0.5;
     double omega = 0;
     double Rmax = 1;
     double Rmin = 0;
-    rlcd::RLCDAgent agent1(std::move(world1), gamma, epsilon, planning_limit, priority_threshold,filename,M,Emin,p,omega,Rmax,Rmin);
-
+    rlcd::RLCDAgent agent1(std::move(ballcatchingR), gamma, epsilon, planning_limit, priority_threshold,filename,M,Emin,p,omega,Rmax,Rmin);
+    agent1.Train(1000);
     agent1.SetLogModel(true);
     // agent1.SetLogQtable(true);
-    agent1.SetLogExperience(true);
-    agent1.SetLogErrors(true);
+    // agent1.SetLogExperience(true);
+    // agent1.SetLogErrors(true);
     agent1.SetLogHistory(true);
-    agent1.Train(200);
-    agent1.SetEnvironment(std::move(world2));
-     std::cout << "---Environment is changed---" << '\n';
-    agent1.Train(200);
+    agent1.Train(2);
+    // agent1.SetEnvironment(std::move(ballcatchingU));
+    //  std::cout << "---Environment is changed---" << '\n';
+    // agent1.Train(200);
     // std::cout << "--- Epsilon 0 ---" << '\n';
     // agent1.SetEpsilon(0);
     // agent1.Train(5);
