@@ -20,7 +20,8 @@
     If terminal state is reached next state is returned as terminal state but
     environment is reseted to initial state.
 
-    If start state specified as (-1,-1) every episode agent start at random state
+    If start state of agent specified as (-1,-1) every episode agent start at random state
+    If start state of ball specified as (-1,-1) every episode ball start at random state
 */
 
 /*
@@ -36,32 +37,7 @@ namespace ballcatching{
   BallCatchingWorld::BallCatchingWorld(int size, int ball_direction, double reward, double punishment,int start_ball_x, int start_ball_y,int start_agent_x, int start_agent_y):
   size(size), reward(reward), ball_direction(ball_direction), punishment(punishment),
   start_ball_x(start_ball_x), start_ball_y(start_ball_y), start_agent_x(start_agent_x), start_agent_y(start_agent_y){
-    if(start_agent_y == -1 && start_agent_x == -1){
-      // random start
-      for (size_t i = 0; i < size; i++) {
-        if(start_ball_x != i){
-          x_without_ball.push_back(i);
-        }
-        if(start_ball_y != i){
-          y_without_ball.push_back(i);
-        }
-      }
-
-      int random_start_agent_x = (int)(distribution(generator) * size-1);
-      int random_start_agent_y = (int)(distribution(generator) * size-1);
-      random_start_agent_x = x_without_ball.at(random_start_agent_x);
-      random_start_agent_y = y_without_ball.at(random_start_agent_y);
-
-      current_agent_x = random_start_agent_x;
-      current_agent_y = random_start_agent_y;
-    }
-    else{
-      current_agent_x = start_agent_x;
-      current_agent_y = start_agent_y;
-    }
-
-    current_ball_x = start_ball_x;
-    current_ball_y = start_ball_y;
+    StartEpisode();
   }
 
   rlinterface::State* BallCatchingWorld::ObserveState(){
@@ -133,22 +109,7 @@ namespace ballcatching{
       isterminal = true;
 
       // random start or normal
-      if(start_agent_y == -1 && start_agent_x == -1){
-        int random_start_agent_x = (int)(distribution(generator) * size-1);
-        int random_start_agent_y = (int)(distribution(generator) * size-1);
-        random_start_agent_x = x_without_ball.at(random_start_agent_x);
-        random_start_agent_y = y_without_ball.at(random_start_agent_y);
-
-        current_agent_x = random_start_agent_x;
-        current_agent_y = random_start_agent_y;
-      }
-      else{
-        current_agent_x = start_agent_x;
-        current_agent_y = start_agent_y;
-      }
-
-      current_ball_x = start_ball_x;
-      current_ball_y = start_ball_y;
+      StartEpisode();
     }
     else{
       next_reward = punishment;
@@ -184,6 +145,70 @@ namespace ballcatching{
 
   int BallCatchingWorld::GetBallY(){
     return current_ball_y;
+  }
+
+  void BallCatchingWorld::StartEpisode(){
+      std::vector<int> temp_list_x;
+      std::vector<int> temp_list_y;
+      if(start_agent_y == -1 && start_agent_x == -1){
+          if(start_ball_y == -1 && start_ball_x == -1){
+              int current_agent_x = (int)(distribution(generator) * size);
+              int current_agent_y = (int)(distribution(generator) * size);
+              for (size_t i = 0; i < size; i++) {
+                  if(current_agent_x != i){
+                      temp_list_x.push_back(i);
+                  }
+                  if(current_agent_y != i){
+                      temp_list_y.push_back(i);
+                  }
+              }
+              int random_start_ball_x = (int)(distribution(generator) * size-1);
+              int random_start_ball_y = (int)(distribution(generator) * size-1);
+              current_ball_x = temp_list_x.at(random_start_ball_x);
+              current_ball_y = temp_list_x.at(random_start_ball_y);
+
+          }
+          else{
+              current_ball_x = start_ball_x;
+              current_ball_y = start_ball_y;
+              for (size_t i = 0; i < size; i++) {
+                  if(start_ball_x != i){
+                     temp_list_x.push_back(i);
+                  }
+                  if(start_ball_y != i){
+                      temp_list_y.push_back(i);
+                  }
+              }
+              int random_start_agent_x = (int)(distribution(generator) * size-1);
+              int random_start_agent_y = (int)(distribution(generator) * size-1);
+              current_agent_x = temp_list_x.at(random_start_agent_x);
+              current_agent_y = temp_list_x.at(random_start_agent_y);
+              }
+      }
+      else{
+          if(start_ball_y == -1 && start_ball_x == -1){
+              current_agent_x = start_agent_x;
+              current_agent_y = start_agent_y;
+              for (size_t i = 0; i < size; i++) {
+                  if(start_agent_x != i){
+                      temp_list_x.push_back(i);
+                  }
+                  if(start_agent_y != i){
+                      temp_list_y.push_back(i);
+                  }
+              }
+              int random_start_ball_x = (int)(distribution(generator) * size-1);
+              int random_start_ball_y = (int)(distribution(generator) * size-1);
+              current_ball_x = temp_list_x.at(random_start_ball_x);
+              current_ball_y = temp_list_x.at(random_start_ball_y);
+          }
+          else{
+              current_agent_x = start_agent_x;
+              current_agent_y = start_agent_y;
+              current_ball_x = start_ball_x;
+              current_ball_y = start_ball_y;
+          }
+      }
   }
 
   //initialize random number generator and distribution

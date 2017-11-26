@@ -68,7 +68,8 @@ namespace rlcd{
                 }
                 if(current_model->GetId() != max_model->GetId() && !(max_model->GetE() < Emin)){
                     if(log_history){
-                        historyfile << "current_model is changed with: " << max_model->GetId() << '\n';
+                        changefile << "e" << (episodecounter + total_episode_count) << "_s" << stepsizecounter;
+                        changefile << "_change_to_" << max_model->GetId() << '\n';
                     }
                     std::cout << "current_model is changed with: " << max_model->GetId() << '\n';
                     current_model = max_model;
@@ -83,7 +84,9 @@ namespace rlcd{
                     models.push_back(std::unique_ptr<Model>(current_model));
                     std::cout << "new model is created with id: " << model_id_counter <<'\n';
                     if(log_history){
-                        historyfile << "new model is created with id: " << model_id_counter <<'\n';
+                        changefile << "e" << (episodecounter + total_episode_count) << "_s" << stepsizecounter;
+                        changefile << "_new_creat_" << max_model->GetId() << '\n';
+                        changefile << "new model is created with id: " << model_id_counter <<'\n';
                     }
                     // get currentstate from qtable of new model
                     currentagentstate = AddNewStateToQTable(currentagentstate->GetPureState()->clone(),current_model->GetQTable());
@@ -304,6 +307,8 @@ namespace rlcd{
         if(log_history){
             std::string filename = log_name + "/history";
             historyfile.open(filename,std::ios_base::app);
+            filename = log_name + "/change-history";
+            changefile.open(filename,std::ios_base::app);
         }
         if(log_experience){
             std::string s = log_name + "/exprience";
@@ -330,6 +335,7 @@ namespace rlcd{
     void RLCDAgent::CloseLogsFiles(){
         if(log_history){
             historyfile.close();
+            changefile.close();
         }
         if(log_experience){
             expfile.close();

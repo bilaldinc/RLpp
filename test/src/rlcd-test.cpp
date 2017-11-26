@@ -60,9 +60,9 @@ int main() {
     double epsilon = 0.1;
     double planning_limit = 10;
     double priority_threshold = 0.00000001;
-    int M = 50;
+    int M = 8;
     double Emin = -0.1;
-    double p = 1;
+    double p = 0.5;
     double omega = 0;
     double Rmax = 1;
     double Rmin = 0;

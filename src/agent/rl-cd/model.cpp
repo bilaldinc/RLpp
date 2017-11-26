@@ -49,7 +49,7 @@ namespace rlcd{
             it2--;
         }
         // increase counter, calculate error, update reward estimate
-        error.reward_error = (exp.reward - it2->reward_estimate) / (Nsa(it2->state_action_counter) + 1);
+        error.reward_error = (exp.reward - it2->reward_estimate) / Nsa(it2->state_action_counter + 1);
         if(update){
             it2->reward_estimate += error.reward_error;
         }
@@ -69,7 +69,7 @@ namespace rlcd{
                 // calculate propbability error, update, add error to error list
                 double probability_error = 1 - it3->probability ;
                 if(update){
-                    it3->probability += probability_error /  (Nsa(it2->state_action_counter) + 1);
+                    it3->probability += probability_error /  Nsa(it2->state_action_counter + 1);
                 }
                 error.transition_errors.push_back(probability_error);
             }
@@ -87,15 +87,15 @@ namespace rlcd{
             if(update){
                 search_object2.reward_estimate = exp.reward;
                 search_object2.state_action_nextstate_counter = 1;
-                search_object2.probability = 1.0 /  (Nsa(it2->state_action_counter) + 1);
+                search_object2.probability = 1.0 /  Nsa(it2->state_action_counter + 1);
                 it2->next_state_list.push_back(search_object2);
-                error.transition_errors.push_back(1.0 - 0);
+                error.transition_errors.push_back(1.0);
             }
             else{
                 search_object2.reward_estimate = 0;
                 search_object2.state_action_nextstate_counter = 0;
                 search_object2.probability = 0;
-                error.transition_errors.push_back(1.0 - 0);
+                error.transition_errors.push_back(1.0);
             }
         }
         if(update){
@@ -223,7 +223,7 @@ namespace rlcd{
 
     double Model::UpdateModelQuality(ExperienceTuple exp,double Rmax ,double Rmin){
         UpdateError err = UpdateModel(exp,false);
-        double emR = 1 - (2 * (1 / (Rmax - Rmin)) *pow(err.reward_error,2));
+        double emR = 1 - (2.0 * (1.0 / (Rmax - Rmin)) *pow(err.reward_error,2));
         double emT = 0;
         for(std::list<double>::iterator it = err.transition_errors.begin(); it != err.transition_errors.end(); ++it){
             emT += pow(*it,2);

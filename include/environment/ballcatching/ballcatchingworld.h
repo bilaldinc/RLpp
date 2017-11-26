@@ -42,8 +42,7 @@ namespace ballcatching{
       int start_agent_x;
       int start_agent_y;
       int Mod(int a, int b);
-      std::vector<int> x_without_ball;
-      std::vector<int> y_without_ball;
+      void StartEpisode();
       //random number generator and distribution
       static std::random_device rd;
       static std::default_random_engine generator;

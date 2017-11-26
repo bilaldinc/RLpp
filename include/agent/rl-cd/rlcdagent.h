@@ -75,6 +75,7 @@ namespace rlcd{
         std::ofstream historyfile;
         std::ofstream errorfile;
         std::ofstream expfile;
+        std::ofstream changefile;
         int total_episode_count;
         bool log_directory_created;
 
