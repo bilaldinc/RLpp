@@ -19,7 +19,7 @@ using namespace std;
 
 int main() {
 
-  simplegridworld::GridWorld* world1p = new simplegridworld::GridWorld("hugeHalls.gwmap");
+  simplegridworld::GridWorld* world1p = new simplegridworld::GridWorld("hugeHalls.gwmap", 0.3);
   std::unique_ptr<simplegridworld::GridWorld> world1(world1p);
 
   qlearning::QLearningAgent agent1(std::move(world1), 0.1, 0.99, 0.3);

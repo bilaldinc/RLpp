@@ -50,8 +50,8 @@ namespace simplegridworld{
 
     }
   }
-  GridWorld::GridWorld(const std::string mapName):
-  mapName(mapName){
+  GridWorld::GridWorld(const std::string mapName, double reward):
+  reward(reward), mapName(mapName){
     std::cout<<mapName<<std::endl;
     std::ifstream infile("../maps/"+mapName);
     std::string line;
