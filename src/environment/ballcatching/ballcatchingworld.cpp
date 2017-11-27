@@ -22,6 +22,8 @@
 
     If start state of agent specified as (-1,-1) every episode agent start at random state
     If start state of ball specified as (-1,-1) every episode ball start at random state
+
+    States are  position of the ball relative to the catcher.
 */
 
 /*
@@ -42,7 +44,9 @@ namespace ballcatching{
 
   rlinterface::State* BallCatchingWorld::ObserveState(){
     //callee must handle deallocating the memory
-    return  new ToroidalState(current_agent_x,current_agent_y,false);
+    int relative_x = Mod(current_ball_x - current_agent_x,size);
+    int relative_y = Mod(current_ball_y - current_agent_y,size);
+    return  new ToroidalState(relative_x,relative_y,false);
   }
 
   rlinterface::Response* BallCatchingWorld::TakeAnAction(int type){
@@ -80,20 +84,20 @@ namespace ballcatching{
     int next_ball_y = current_ball_y;
     //decide next ball position
     if (ball_direction == 0){
-      next_ball_x = BallCatchingWorld::Mod(current_ball_x + 1,size);
+      next_ball_x = Mod(current_ball_x + 1,size);
       next_ball_y = current_ball_y;
     }
     else if(ball_direction == 1) {
-      next_ball_x = BallCatchingWorld::Mod(current_ball_x - 1,size);
+      next_ball_x = Mod(current_ball_x - 1,size);
       next_ball_y = current_ball_y;
     }
     else if(ball_direction == 2){
       next_ball_x = current_ball_x;
-      next_ball_y = BallCatchingWorld::Mod(current_ball_y - 1,size);
+      next_ball_y = Mod(current_ball_y - 1,size);
     }
     else if(ball_direction == 3){
       next_ball_x = current_ball_x;
-      next_ball_y = BallCatchingWorld::Mod(current_ball_y + 1,size);
+      next_ball_y = Mod(current_ball_y + 1,size);
     }
     else{
       //invalid ball position
@@ -119,9 +123,10 @@ namespace ballcatching{
       current_agent_x = next_agent_x;
       current_agent_y = next_agent_y;
     }
-
     //Create return values
-    std::unique_ptr<ToroidalState> toroidal_state(new ToroidalState(next_agent_x,next_agent_y,isterminal));
+    int relative_x = Mod(current_ball_x - current_agent_x,size);
+    int relative_y = Mod(current_ball_y - current_agent_y,size);
+    std::unique_ptr<ToroidalState> toroidal_state(new ToroidalState(relative_x,relative_y,isterminal));
     rlinterface::Response *response = new rlinterface::Response(std::move(toroidal_state),next_reward);
 
     return response;
