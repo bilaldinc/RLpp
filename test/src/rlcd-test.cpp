@@ -62,7 +62,7 @@ int main() {
     world2p = new ballcatching::BallCatchingWorld(size,3,reward,punishment,start_ball_x,start_ball_y,start_agent_x,start_agent_y);
     std::unique_ptr<ballcatching::BallCatchingWorld> ballcatchingD(world2p);
 
-    world2p = new ballcatching::BallCatchingWorld(size,2,reward,punishment,start_ball_x,start_ball_y,start_agent_x,start_agent_y);
+    world2p = new ballcatching::BallCatchingWorld(size,0,reward,punishment,start_ball_x,start_ball_y,start_agent_x,start_agent_y);
     std::unique_ptr<ballcatching::BallCatchingWorld> ballcatchingR2(world2p);
 
     world2p = new ballcatching::BallCatchingWorld(size,1,reward,punishment,start_ball_x,start_ball_y,start_agent_x,start_agent_y);
@@ -73,7 +73,6 @@ int main() {
 
     world2p = new ballcatching::BallCatchingWorld(size,3,reward,punishment,start_ball_x,start_ball_y,start_agent_x,start_agent_y);
     std::unique_ptr<ballcatching::BallCatchingWorld> ballcatchingD2(world2p);
-
 
     double gamma = 1;
     double epsilon = 0.1;
