@@ -56,28 +56,74 @@ int main() {
     world2p = new ballcatching::BallCatchingWorld(size,2,reward,punishment,start_ball_x,start_ball_y,start_agent_x,start_agent_y);
     std::unique_ptr<ballcatching::BallCatchingWorld> ballcatchingU(world2p);
 
+    world2p = new ballcatching::BallCatchingWorld(size,1,reward,punishment,start_ball_x,start_ball_y,start_agent_x,start_agent_y);
+    std::unique_ptr<ballcatching::BallCatchingWorld> ballcatchingL(world2p);
 
-    double gamma = 0.95;
-    double epsilon = 1;
+    world2p = new ballcatching::BallCatchingWorld(size,3,reward,punishment,start_ball_x,start_ball_y,start_agent_x,start_agent_y);
+    std::unique_ptr<ballcatching::BallCatchingWorld> ballcatchingD(world2p);
+
+    world2p = new ballcatching::BallCatchingWorld(size,2,reward,punishment,start_ball_x,start_ball_y,start_agent_x,start_agent_y);
+    std::unique_ptr<ballcatching::BallCatchingWorld> ballcatchingR2(world2p);
+
+    world2p = new ballcatching::BallCatchingWorld(size,1,reward,punishment,start_ball_x,start_ball_y,start_agent_x,start_agent_y);
+    std::unique_ptr<ballcatching::BallCatchingWorld> ballcatchingL2(world2p);
+
+    world2p = new ballcatching::BallCatchingWorld(size,2,reward,punishment,start_ball_x,start_ball_y,start_agent_x,start_agent_y);
+    std::unique_ptr<ballcatching::BallCatchingWorld> ballcatchingU2(world2p);
+
+    world2p = new ballcatching::BallCatchingWorld(size,3,reward,punishment,start_ball_x,start_ball_y,start_agent_x,start_agent_y);
+    std::unique_ptr<ballcatching::BallCatchingWorld> ballcatchingD2(world2p);
+
+
+    double gamma = 1;
+    double epsilon = 0.1;
     double planning_limit = 10;
     double priority_threshold = 0.00000001;
-    int M = std::numeric_limits<int>::max();
+    int M = 5;
     double Emin = -0.1;
-    double p = 0.5;
+    double p = 0.2;
     double omega = 0;
-    double Rmax = 1;
-    double Rmin = 0;
+    double Rmax = 10;
+    double Rmin = -1;
     rlcd::RLCDAgent agent1(std::move(ballcatchingR), gamma, epsilon, planning_limit, priority_threshold,filename,M,Emin,p,omega,Rmax,Rmin);
-    agent1.Train(1000);
+    agent1.SetLogExperience(true);
+    agent1.SetLogErrors(true);
     agent1.SetLogModel(true);
-    // agent1.SetLogQtable(true);
-    // agent1.SetLogExperience(true);
-    // agent1.SetLogErrors(true);
+    agent1.SetLogQtable(true);
     agent1.SetLogHistory(true);
-    agent1.Train(2);
-    // agent1.SetEnvironment(std::move(ballcatchingU));
-    //  std::cout << "---Environment is changed---" << '\n';
-    // agent1.Train(200);
+    agent1.Train(100);
+    // agent1.InitiateLogsFiles();
+    // agent1.LogModel(0,0);
+    // agent1.LogQtable(0,0,0);
+    agent1.SetEnvironment(std::move(ballcatchingU));
+     std::cout << "---Environment is changed---" << '\n';
+    agent1.Train(100);
+
+    agent1.SetEnvironment(std::move(ballcatchingL));
+     std::cout << "---Environment is changed---" << '\n';
+    agent1.Train(100);
+
+    agent1.SetEnvironment(std::move(ballcatchingD));
+     std::cout << "---Environment is changed---" << '\n';
+    agent1.Train(100);
+
+    agent1.SetEnvironment(std::move(ballcatchingR2));
+     std::cout << "---Environment is changed---" << '\n';
+    agent1.Train(100);
+
+    agent1.SetEnvironment(std::move(ballcatchingL2));
+     std::cout << "---Environment is changed---" << '\n';
+    agent1.Train(100);
+
+    agent1.SetEnvironment(std::move(ballcatchingU2));
+     std::cout << "---Environment is changed---" << '\n';
+    agent1.Train(100);
+
+    agent1.SetEnvironment(std::move(ballcatchingD2));
+     std::cout << "---Environment is changed---" << '\n';
+    agent1.Train(100);
+
+
     // std::cout << "--- Epsilon 0 ---" << '\n';
     // agent1.SetEpsilon(0);
     // agent1.Train(5);

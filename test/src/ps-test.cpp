@@ -26,10 +26,10 @@ int main() {
     int ball_direction = 0;
     double reward = 10;
     double punishment = -1;
-    int start_ball_x = 0;
-    int start_ball_y = 0;
-    int start_agent_x = 5;
-    int start_agent_y = 5;
+    int start_ball_x = -1;
+    int start_ball_y = -1;
+    int start_agent_x = -1;
+    int start_agent_y = -1;
     ballcatching::BallCatchingWorld* world2p = new ballcatching::BallCatchingWorld(size,ball_direction,reward,punishment,start_ball_x,start_ball_y,start_agent_x,start_agent_y);
     std::unique_ptr<ballcatching::BallCatchingWorld> world2(world2p);
 

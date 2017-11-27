@@ -80,13 +80,13 @@ namespace rlcd{
                 }
                 // check it is lower then thresholdz
                 if(current_model->GetE() < Emin){
-                    current_model = new Model(M,p,omega,++model_id_counter);
+                    model_id_counter++;
+                    current_model = new Model(M,p,omega,model_id_counter);
                     models.push_back(std::unique_ptr<Model>(current_model));
                     std::cout << "new model is created with id: " << model_id_counter <<'\n';
                     if(log_history){
                         changefile << "e" << (episodecounter + total_episode_count) << "_s" << stepsizecounter;
-                        changefile << "_new_creat_" << max_model->GetId() << '\n';
-                        changefile << "new model is created with id: " << model_id_counter <<'\n';
+                        changefile << "_new_creat_" << current_model->GetId() << '\n';
                     }
                     // get currentstate from qtable of new model
                     currentagentstate = AddNewStateToQTable(currentagentstate->GetPureState()->clone(),current_model->GetQTable());
