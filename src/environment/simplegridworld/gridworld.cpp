@@ -29,6 +29,7 @@
 
 #include "../../../include/environment/simplegridworld/gridworld.h"
 
+
 namespace simplegridworld{
 
   GridWorld::GridWorld(int size, int initialX, int initialY, int terminalX, int terminalY, double reward):
@@ -37,6 +38,51 @@ namespace simplegridworld{
   terminalX(terminalX), terminalY(terminalY), reward(reward){
     currentX = initialX;
     currentY = initialY;
+    for (int i = 0; i < size; i++){
+            std::vector<char> row;
+            for (int j = 0; j < size; j++){
+                int state_type = (j == 0) * 8 + (i == 0) * 4 + (j == size - 1) * 2 + (i == size-1) * 1;
+                row.push_back(intToHex(state_type));
+                std::cout<<state_type<<" ";
+            }
+            map_matrix.push_back(row);
+            std::cout<<std::endl;
+
+    }
+  }
+  GridWorld::GridWorld(const std::string mapName, double reward):
+  reward(reward), mapName(mapName){
+    std::cout<<mapName<<std::endl;
+    std::ifstream infile("../maps/"+mapName);
+    std::string line;
+    int i = 0;
+    while (std::getline(infile, line))
+    {
+        std::istringstream ss(line);
+        if(i == 0){
+          ss>>initialX;
+          ss>>initialY;
+          std::cout<<"initialX: " << initialX << std::endl;
+          std::cout<<"initialY: " << initialY << std::endl;
+        }
+        else if(i == 1){
+          ss>>terminalX;
+          ss>>terminalY;
+          std::cout<<"terminalX: " << terminalX<< std::endl;
+          std::cout<<"terminalY: " << terminalY<< std::endl;
+        }
+        else if(i > 2){
+          std::vector<char> row;
+          char c;
+          while(ss>>c)
+          {
+              row.push_back(c);
+          }
+          map_matrix.push_back(row);
+        }  
+        i++;
+    }
+    size = map_matrix.size();
   }
 
   rlinterface::State* GridWorld::ObserveState(){
@@ -48,35 +94,45 @@ namespace simplegridworld{
     //callee must handle allocated memory
     int nextX = currentX;
     int nextY = currentY;
+    // std::cout<<"\nmap: "<<map_matrix[currentX][currentY]<<std::endl;
+    // std::cout<<"type: "<<type<<std::endl;
+    // std::cout<<"cx: "<<currentX<<", cy: "<<currentY<<std::endl;
+    
 
     //decide next state according the action type
     if (type == 0){
-      nextX = currentX + 1;
-      nextY = currentY;
+      if('2' != map_matrix[currentY][currentX] &&  '3' != map_matrix[currentY][currentX] &&  '6' != map_matrix[currentY][currentX] &&  '7' != map_matrix[currentY][currentX] &&  'A' != map_matrix[currentY][currentX] &&  'B' != map_matrix[currentY][currentX] &&  'E' != map_matrix[currentY][currentX] &&  'F' != map_matrix[currentY][currentX]){
+        nextX = currentX + 1;
+        nextY = currentY;
+      }
     }
     else if(type == 1) {
-      nextX = currentX - 1;
-      nextY = currentY;
+      if('8' != map_matrix[currentY][currentX] &&  '9' != map_matrix[currentY][currentX] &&  'A' != map_matrix[currentY][currentX] &&  'B' != map_matrix[currentY][currentX] &&  'C' != map_matrix[currentY][currentX] &&  'D' != map_matrix[currentY][currentX] &&  'E' != map_matrix[currentY][currentX] &&  'F' != map_matrix[currentY][currentX]){
+        nextX = currentX - 1;
+        nextY = currentY;
+      }
+
     }
     else if(type == 2){
-      nextX = currentX;
-      nextY = currentY - 1;
+      if('4' != map_matrix[currentY][currentX] &&  '5' != map_matrix[currentY][currentX] &&  '6' != map_matrix[currentY][currentX] &&  '7' != map_matrix[currentY][currentX] &&  'C' != map_matrix[currentY][currentX] &&  'D' != map_matrix[currentY][currentX] &&  'E' != map_matrix[currentY][currentX] &&  'F' != map_matrix[currentY][currentX]){
+        nextX = currentX;
+        nextY = currentY - 1;
+      }
+
     }
     else if(type == 3){
-      nextX = currentX;
-      nextY = currentY + 1;
+      if('1' != map_matrix[currentY][currentX] &&  '3' != map_matrix[currentY][currentX] &&  '5' != map_matrix[currentY][currentX] &&  '7' != map_matrix[currentY][currentX] &&  '9' != map_matrix[currentY][currentX] &&  'B' != map_matrix[currentY][currentX] &&  'D' != map_matrix[currentY][currentX] &&  'F' != map_matrix[currentY][currentX]){
+        nextX = currentX;
+        nextY = currentY + 1;
+      }
+
     }
     else{
       //invalid action type
       std::cout << "invalid action! something is wrong" << '\n';
     }
 
-    //check boundaries
-    if(nextX >= size || nextY >= size || nextX < 0 || nextY < 0){
-      nextX = currentX;
-      nextY = currentY;
-    }
-
+    // std::cout<<"nx: "<<nextX<<", ny: "<<nextY<<std::endl;
     //check terminal
     bool isterminal = false;
     double nextreward = 0;
@@ -98,5 +154,9 @@ namespace simplegridworld{
 
     return response;
   }
+  char GridWorld::intToHex(int i){
+    char hex[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+    return hex[i];
+     }
 
 }
