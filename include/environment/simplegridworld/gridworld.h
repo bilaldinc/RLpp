@@ -27,6 +27,7 @@ namespace simplegridworld{
       GridWorld(std::string mapName, double reward);
       rlinterface::State* ObserveState();
       rlinterface::Response* TakeAnAction(int type);
+      std::list<rlinterface::State*> CreateAllPossibleStates();
 
     private:
       int currentX, currentY;

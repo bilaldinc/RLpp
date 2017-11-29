@@ -216,6 +216,22 @@ namespace ballcatching{
       }
   }
 
+  std::list<rlinterface::State*> BallCatchingWorld::CreateAllPossibleStates(){
+      std::list<rlinterface::State*> list;
+      for (size_t i = 0; i < size; i++) {
+          for (size_t j = 0; j < size; j++) {
+              if(i == 0 && j == 0){
+                  list.push_back(new ToroidalState(i,j,true));
+              }
+              else{
+                  list.push_back(new ToroidalState(i,j,false));
+              }
+
+          }
+      }
+      return list;
+  }
+
   //initialize random number generator and distribution
   std::random_device BallCatchingWorld::rd;
   std::default_random_engine BallCatchingWorld::generator(rd());

@@ -27,6 +27,7 @@ namespace ballcatching{
       void SetBallDirection(int ball_direction);
       int GetBallX();
       int GetBallY();
+      std::list<rlinterface::State*> CreateAllPossibleStates();
 
     private:
       int size;

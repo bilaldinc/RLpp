@@ -126,7 +126,7 @@ namespace rlcd{
                         sum += it->probability * it2->GetMaxActionValue();
                     }
                     priority_queue_item.action->SetValue(priority_queue_item.state_action->reward_estimate + (gamma * sum));
-                    LogQtable((episodecounter+total_episode_count),stepsizecounter,planning_counter);
+                    LogQtable((episodecounter+total_episode_count),stepsizecounter,planning_counter,current_model);
                     // for all states action pairs that leads to this state
                     std::list<StateAction*> leading_states = current_model->GetStatesLeadsToS((priority_queue_item.state)->GetPureState());
                     for(std::list<StateAction*>::iterator it = leading_states.begin(); it != leading_states.end(); ++it){

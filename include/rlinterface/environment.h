@@ -10,6 +10,7 @@
 
 #include "response.h"
 #include "state.h"
+#include <list>
 
 namespace rlinterface{
 
@@ -18,6 +19,7 @@ namespace rlinterface{
     public:
       virtual State* ObserveState() = 0;
       virtual Response* TakeAnAction(int type) = 0;
+      virtual std::list<rlinterface::State*> CreateAllPossibleStates() = 0;
       virtual ~Environment();
 
   };

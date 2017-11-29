@@ -79,7 +79,7 @@ namespace simplegridworld{
               row.push_back(c);
           }
           map_matrix.push_back(row);
-        }  
+        }
         i++;
     }
     size = map_matrix.size();
@@ -97,7 +97,7 @@ namespace simplegridworld{
     // std::cout<<"\nmap: "<<map_matrix[currentX][currentY]<<std::endl;
     // std::cout<<"type: "<<type<<std::endl;
     // std::cout<<"cx: "<<currentX<<", cy: "<<currentY<<std::endl;
-    
+
 
     //decide next state according the action type
     if (type == 0){
@@ -158,5 +158,21 @@ namespace simplegridworld{
     char hex[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
     return hex[i];
      }
+
+     std::list<rlinterface::State*> GridWorld::CreateAllPossibleStates(){
+        std::list<rlinterface::State*> list;
+        for (size_t i = 0; i < size; i++) {
+            for (size_t j = 0; j < size; j++) {
+                if(i == terminalX && j == terminalX){
+                    list.push_back(new GridState(i,j,true));
+                    list.push_back(new GridState(i,j,false));
+                }
+                else{
+                    list.push_back(new GridState(i,j,false));
+                }
+            }
+        }
+        return list;
+    }
 
 }
