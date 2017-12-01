@@ -148,6 +148,7 @@ namespace rlcd{
                     planning_counter++;
                 }
                 // update agent current state
+                priority_queue = std::priority_queue<PriorityQueueItem>();
                 currentagentstate = nextagentstate;
                 stepsizecounter++;
             }

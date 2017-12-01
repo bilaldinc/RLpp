@@ -76,11 +76,11 @@ int main() {
 
     double gamma = 1;
     double epsilon = 0.1;
-    double planning_limit = 10;
-    double priority_threshold = 0.00000001;
-    int M = 5;
+    double planning_limit = 20;
+    double priority_threshold = 0.001;
+    int M = 2;
     double Emin = -0.1;
-    double p = 0.2;
+    double p = 0.4;
     double omega = 0;
     double Rmax = 10;
     double Rmin = -1;
@@ -90,37 +90,42 @@ int main() {
     agent1.SetLogModel(true);
     agent1.SetLogQtable(true);
     agent1.SetLogHistory(true);
-    agent1.Train(100);
+    agent1.Train(200);
+
+    agent1.SetEnvironment(std::move(world2));
+     std::cout << "---Environment is changed---" << '\n';
+    agent1.Train(200);
+
     // agent1.InitiateLogsFiles();
     // agent1.LogModel(0,0);
     // agent1.LogQtable(0,0,0);
-    agent1.SetEnvironment(std::move(ballcatchingU));
-     std::cout << "---Environment is changed---" << '\n';
-    agent1.Train(100);
-
-    agent1.SetEnvironment(std::move(ballcatchingL));
-     std::cout << "---Environment is changed---" << '\n';
-    agent1.Train(100);
-
-    agent1.SetEnvironment(std::move(ballcatchingD));
-     std::cout << "---Environment is changed---" << '\n';
-    agent1.Train(100);
-
-    agent1.SetEnvironment(std::move(ballcatchingR2));
-     std::cout << "---Environment is changed---" << '\n';
-    agent1.Train(100);
-
-    agent1.SetEnvironment(std::move(ballcatchingL2));
-     std::cout << "---Environment is changed---" << '\n';
-    agent1.Train(100);
-
-    agent1.SetEnvironment(std::move(ballcatchingU2));
-     std::cout << "---Environment is changed---" << '\n';
-    agent1.Train(100);
-
-    agent1.SetEnvironment(std::move(ballcatchingD2));
-     std::cout << "---Environment is changed---" << '\n';
-    agent1.Train(100);
+    // agent1.SetEnvironment(std::move(ballcatchingU));
+    //  std::cout << "---Environment is changed---" << '\n';
+    // agent1.Train(100);
+    //
+    // agent1.SetEnvironment(std::move(ballcatchingL));
+    //  std::cout << "---Environment is changed---" << '\n';
+    // agent1.Train(100);
+    //
+    // agent1.SetEnvironment(std::move(ballcatchingD));
+    //  std::cout << "---Environment is changed---" << '\n';
+    // agent1.Train(100);
+    //
+    // agent1.SetEnvironment(std::move(ballcatchingR2));
+    //  std::cout << "---Environment is changed---" << '\n';
+    // agent1.Train(100);
+    //
+    // agent1.SetEnvironment(std::move(ballcatchingL2));
+    //  std::cout << "---Environment is changed---" << '\n';
+    // agent1.Train(100);
+    //
+    // agent1.SetEnvironment(std::move(ballcatchingU2));
+    //  std::cout << "---Environment is changed---" << '\n';
+    // agent1.Train(100);
+    //
+    // agent1.SetEnvironment(std::move(ballcatchingD2));
+    //  std::cout << "---Environment is changed---" << '\n';
+    // agent1.Train(100);
 
 
     // std::cout << "--- Epsilon 0 ---" << '\n';

@@ -93,6 +93,7 @@ namespace prioritizedsweeping{
                 }
                 // update agent current state
                 currentagentstate = nextagentstate;
+                priority_queue = std::priority_queue<PriorityQueueItem>();
                 stepsizecounter++;
             }
             std::cout << "episode : " <<(episodecounter + total_episode_count) << "  stepsize : " << stepsizecounter <<'\n';

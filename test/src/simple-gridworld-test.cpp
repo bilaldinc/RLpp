@@ -19,11 +19,11 @@ using namespace std;
 
 int main() {
 
-  simplegridworld::GridWorld* world1p = new simplegridworld::GridWorld("hugeHalls.gwmap", 0.3);
+  simplegridworld::GridWorld* world1p = new simplegridworld::GridWorld("hugeHalls.gwmap", 10);
   std::unique_ptr<simplegridworld::GridWorld> world1(world1p);
 
-  qlearning::QLearningAgent agent1(std::move(world1), 0.1, 0.99, 0.3);
-  agent1.TrainV2(3000);
+  qlearning::QLearningAgent agent1(std::move(world1), 0.1, 0.95, 0.1);
+  agent1.TrainV2(500);
   // agent1.SetEnvironment(std::move(world2));
   // agent1.SetEpsilon(0.3);
   // agent1.TrainV2(5000);

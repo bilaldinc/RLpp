@@ -43,10 +43,10 @@ namespace simplegridworld{
             for (int j = 0; j < size; j++){
                 int state_type = (j == 0) * 8 + (i == 0) * 4 + (j == size - 1) * 2 + (i == size-1) * 1;
                 row.push_back(intToHex(state_type));
-                std::cout<<state_type<<" ";
+                // std::cout<<state_type<<" ";
             }
             map_matrix.push_back(row);
-            std::cout<<std::endl;
+            // std::cout<<std::endl;
 
     }
   }
@@ -62,14 +62,14 @@ namespace simplegridworld{
         if(i == 0){
           ss>>initialX;
           ss>>initialY;
-          std::cout<<"initialX: " << initialX << std::endl;
-          std::cout<<"initialY: " << initialY << std::endl;
+          //std::cout<<"initialX: " << initialX << std::endl;
+          //std::cout<<"initialY: " << initialY << std::endl;
         }
         else if(i == 1){
           ss>>terminalX;
           ss>>terminalY;
-          std::cout<<"terminalX: " << terminalX<< std::endl;
-          std::cout<<"terminalY: " << terminalY<< std::endl;
+         // std::cout<<"terminalX: " << terminalX<< std::endl;
+         // std::cout<<"terminalY: " << terminalY<< std::endl;
         }
         else if(i > 2){
           std::vector<char> row;

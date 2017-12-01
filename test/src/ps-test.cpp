@@ -33,26 +33,26 @@ int main() {
     ballcatching::BallCatchingWorld* world2p = new ballcatching::BallCatchingWorld(size,ball_direction,reward,punishment,start_ball_x,start_ball_y,start_agent_x,start_agent_y);
     std::unique_ptr<ballcatching::BallCatchingWorld> world2(world2p);
 
-    size = 5;
+    size = 10;
     int initialX = 0;
     int initialY = 0;
-    int terminalX = 4;
-    int terminalY = 4;
-    reward = 1;
-    simplegridworld::GridWorld* world1p = new simplegridworld::GridWorld(size,initialX,initialY,terminalX,terminalY,reward);
+    int terminalX = 9;
+    int terminalY = 9;
+    reward = 10;
+    simplegridworld::GridWorld* world1p = new simplegridworld::GridWorld("hugeHalls.gwmap",reward);
     std::unique_ptr<simplegridworld::GridWorld> world1(world1p);
 
-    double gamma = 1;
+    double gamma = 0.9;
     double epsilon = 0.1;
-    double planning_limit = 10;
-    double priority_threshold = 0.00000001;
-    prioritizedsweeping::PrioritizedSweepingAgent agent1(std::move(world2), gamma, epsilon, planning_limit, priority_threshold,filename);
+    double planning_limit = 500;
+    double priority_threshold = 0.01;
+    prioritizedsweeping::PrioritizedSweepingAgent agent1(std::move(world1), gamma, epsilon, planning_limit, priority_threshold,filename);
 
     // agent1.SetLogModel(true);
     // agent1.SetLogQtable(true);
     // agent1.SetLogExperience(true);
     // agent1.SetLogHistory(true);
-    agent1.Train(1000);
+    agent1.Train(50);
     std::cout << "--- Epsilon 0 ---" << '\n';
     // agent1.SetEpsilon(0);
     // agent1.Train(5);
