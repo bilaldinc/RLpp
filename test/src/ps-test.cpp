@@ -44,7 +44,7 @@ int main() {
 
     double gamma = 0.9;
     double epsilon = 0.1;
-    double planning_limit = 500;
+    double planning_limit = 250;
     double priority_threshold = 0.01;
     prioritizedsweeping::PrioritizedSweepingAgent agent1(std::move(world1), gamma, epsilon, planning_limit, priority_threshold,filename);
 
