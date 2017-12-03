@@ -69,7 +69,7 @@ namespace rlcd{
                 // calculate propbability error, update, add error to error list
                 double probability_error = 1 - it3->probability ;
                 if(update){
-                    it3->probability += probability_error /  Nsa(it2->state_action_counter + 1);
+                    it3->probability += probability_error /  (Nsa(it2->state_action_counter) + 1);
                 }
                 error.transition_errors.push_back(probability_error);
             }
