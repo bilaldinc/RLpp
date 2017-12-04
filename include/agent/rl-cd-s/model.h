@@ -96,12 +96,12 @@ namespace rlcds{
         int id;
         int size;
         double Sm;
-        std::list<double> Sm_values;
+        std::list<SM> Sm_values;
 
 
     public:
         Model(int M, double p, double omega,int id);
-        Model(int M, double p, double omega,int id, int size);
+        Model(int M, double p, double omega,int id, int size,std::list<std::unique_ptr<Model>> &models);
         UpdateError UpdateModel(ExperienceTuple exp,bool update);
         double GetRewardEstimate(rlinterface::State *state, int action, rlinterface::State *next_state);
         double GetRewardEstimate(rlinterface::State *state, int action);
@@ -116,7 +116,7 @@ namespace rlcds{
         int GetId();
         void SetSM(double sm);
         double GetSM();
-        std::list<double>& GetSmValues();
+        std::list<SM>& GetSmValues();
         bool operator < (const Model& model);
   };
 

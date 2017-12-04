@@ -24,8 +24,12 @@ namespace rlcds{
 
     }
 
-    Model::Model(int M, double p, double omega,int id, int size): M(M), p(p), omega(omega), E(0), id(id), size(size),Sm(0){
-
+    Model::Model(int M, double p, double omega,int id, int size, std::list<std::unique_ptr<Model>> &models): M(M), p(p), omega(omega), E(0), id(id), size(size),Sm(0){
+        for(std::list<std::unique_ptr<Model>>::iterator it1 = models.begin(); it1 != models.end(); ++it1){
+            Sm_values.push_back(SM((*it1)->GetId()));
+        }
+        // Sm uniform
+        Sm_values.push_back(SM(-1));
     }
 
     UpdateError Model::UpdateModel(ExperienceTuple exp,bool update){

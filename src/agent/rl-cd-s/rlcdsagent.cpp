@@ -22,7 +22,7 @@ namespace rlcds{
     environment(std::move(environment)), gamma(gamma), epsilon(epsilon), planning_limit(planning_limit),
     priority_threshold(priority_threshold), log_model(false), log_qtable(false),log_errors(log_errors),log_experience(false), log_history(false), log_directory_created(false), total_episode_count(0), log_name(log_name),
     M(M),model_id_counter(0),size(size),Sm_uniform(0),psudo_zero(psudo_zero),c(c){
-        current_model = new Model(M,p,omega,0,size);
+        current_model = new Model(M,p,omega,0,size*size, models);
         models.push_back(std::unique_ptr<Model>(current_model));
     }
 
@@ -110,7 +110,7 @@ namespace rlcds{
                 if(Sm_max > c){
                     if(max_model == NULL){
                         // new model
-                        current_model = new Model(M,p,omega,++model_id_counter);
+                        current_model = new Model(M,p,omega,++model_id_counter,size*size, models);
                         models.push_back(std::unique_ptr<Model>(current_model));
                         std::cout << "new model is created with id: " << model_id_counter <<'\n';
                         if(log_history){
