@@ -75,7 +75,16 @@ namespace rlcds{
                         }
                     }
                 }
-                Sm_uniform = std::max(0.0, Sm_uniform + log((1.0 / (size*size)) / current_p));
+                if (current_p == 0){
+                    Sm_uniform = std::max(0.0, Sm_uniform + log((1.0 / (size*size)) / psudo_zero));
+                }
+                else{
+                    Sm_uniform = std::max(0.0, Sm_uniform + log((1.0 / (size*size)) / current_p));
+                }
+
+                if(log_errors){
+                    errorfile << "("+ std::to_string(-1) + "," + std::to_string(Sm_uniform) + "),";
+                }
                 if(log_errors){
                     errorfile << "]" <<'\n';
                 }
@@ -91,15 +100,15 @@ namespace rlcds{
                         }
                     }
                 }
-                // if(Sm_uniform > Sm_max){
-                //     Sm_max = Sm_uniform;
-                //     max_model = NULL;;
-                // }
+                if(Sm_uniform > Sm_max){
+                    Sm_max = Sm_uniform;
+                    max_model = NULL;;
+                }
+
 
                 // made changes
                 if(Sm_max > c){
-                    Sm_uniform = std::max(0.0, Sm_uniform + log((1.0 / (size*size)) / current_p));
-                    if((Sm_uniform > c) && (Sm_uniform > Sm_max)){
+                    if(max_model == NULL){
                         // new model
                         current_model = new Model(M,p,omega,++model_id_counter);
                         models.push_back(std::unique_ptr<Model>(current_model));
@@ -118,9 +127,15 @@ namespace rlcds{
                             changefile << "_change_to_" << max_model->GetId() << '\n';
                         }
                         current_model = max_model;
+                        std::cout << "current_model is changed with: " << current_model->GetId() << '\n';
                         // get currentstate from qtable of updated model
                         currentagentstate = AddNewStateToQTable(currentagentstate->GetPureState()->clone(),current_model->GetQTable());
                     }
+                    // clear other sm's
+                    for(std::list<std::unique_ptr<Model>>::iterator it1 = models.begin(); it1 != models.end(); ++it1){
+                        (*it1)->SetSM(0.0);
+                    }
+                    Sm_uniform = 0;
                 }
                 // update current model
                 ExperienceTuple experience_tuple(currentagentstate->GetPureState(),nextaction,currentenvironmentstate.get(),response->GetReward());

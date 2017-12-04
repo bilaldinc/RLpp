@@ -73,6 +73,16 @@ namespace rlcds{
     };
     typedef struct StateM StateM;
 
+    struct SM {
+        double sm;
+        int id;
+        SM(int id): id(id), sm(0.0){
+
+        }
+    };
+    typedef struct SM SM;
+
+
   class Model {
     private:
         std::list<StateM> state_list;
@@ -86,6 +96,7 @@ namespace rlcds{
         int id;
         int size;
         double Sm;
+        std::list<double> Sm_values;
 
 
     public:
@@ -105,6 +116,7 @@ namespace rlcds{
         int GetId();
         void SetSM(double sm);
         double GetSM();
+        std::list<double>& GetSmValues();
         bool operator < (const Model& model);
   };
 

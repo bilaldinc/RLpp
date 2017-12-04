@@ -78,9 +78,9 @@ int main() {
     double planning_limit = 20;
     double priority_threshold = 0.0001;
     int M = 2;
-    double psudo_zero = 0.0001;
-    double alpha_error = 0.2;
-    double beta_error = 0.2;
+    double psudo_zero = 0.0000001;
+    double alpha_error = 0.01;
+    double beta_error = 0.05;
     double c = log((1 - beta_error) / alpha_error);
 
     rlcds::RLCDSAgent agent1(std::move(ballcatchingR), gamma, epsilon, planning_limit, priority_threshold,filename,M,size*size,psudo_zero,c);
