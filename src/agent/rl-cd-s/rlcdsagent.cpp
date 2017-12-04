@@ -43,7 +43,6 @@ namespace rlcds{
                 // execute nextaction, update current environment state known by agent,
                 std::unique_ptr<rlinterface::Response> response(environment->TakeAnAction(nextaction));
                 currentenvironmentstate = response->GetState();
-                ExperienceTuple experience_tuple(currentagentstate->GetPureState(),nextaction,currentenvironmentstate.get(),response->GetReward());
                 // -----------RLCDS----------------------------------------------
 
                 if(log_errors){
@@ -53,8 +52,8 @@ namespace rlcds{
                 // update Sm values
                 double current_p = current_model->GetTrasitionEstimate(currentagentstate->GetPureState(),nextaction,currentenvironmentstate.get());
                 for(std::list<std::unique_ptr<Model>>::iterator it1 = models.begin(); it1 != models.end(); ++it1){
-                    double temp_sm;
                     if(current_model->GetId() != (*it1)->GetId()){
+                        double temp_sm;
                         double other_p = (*it1)->GetTrasitionEstimate(currentagentstate->GetPureState(),nextaction,currentenvironmentstate.get());
                         if((current_p == 0) && (other_p == 0)){
                             // lim x/x as x->0 = 1
@@ -71,11 +70,12 @@ namespace rlcds{
                             temp_sm = std::max(0.0, (*it1)->GetSM() + log(other_p / current_p));
                             (*it1)->SetSM(temp_sm);
                         }
-                    }
-                    if(log_errors){
-                        errorfile << "("+ std::to_string((*it1)->GetId()) + "," + std::to_string(temp_sm) + "),";
+                        if(log_errors){
+                            errorfile << "("+ std::to_string((*it1)->GetId()) + "," + std::to_string(temp_sm) + "),";
+                        }
                     }
                 }
+                Sm_uniform = std::max(0.0, Sm_uniform + log((1.0 / (size*size)) / current_p));
                 if(log_errors){
                     errorfile << "]" <<'\n';
                 }
@@ -84,11 +84,17 @@ namespace rlcds{
                 Model *max_model;
                 double Sm_max = -std::numeric_limits<double>::max();
                 for(std::list<std::unique_ptr<Model>>::iterator it1 = models.begin(); it1 != models.end(); ++it1){
-                    if((*it1)->GetSM() > Sm_max){
-                        Sm_max = (*it1)->GetSM();
-                        max_model = (*it1).get();
+                    if(current_model->GetId() != (*it1)->GetId()){
+                        if((*it1)->GetSM() > Sm_max){
+                            Sm_max = (*it1)->GetSM();
+                            max_model = (*it1).get();
+                        }
                     }
                 }
+                // if(Sm_uniform > Sm_max){
+                //     Sm_max = Sm_uniform;
+                //     max_model = NULL;;
+                // }
 
                 // made changes
                 if(Sm_max > c){
@@ -111,18 +117,17 @@ namespace rlcds{
                             changefile << "e" << (episodecounter + total_episode_count) << "_s" << stepsizecounter;
                             changefile << "_change_to_" << max_model->GetId() << '\n';
                         }
-                        std::cout << "current_model is changed with: " << max_model->GetId() << '\n';
                         current_model = max_model;
                         // get currentstate from qtable of updated model
                         currentagentstate = AddNewStateToQTable(currentagentstate->GetPureState()->clone(),current_model->GetQTable());
                     }
                 }
                 // update current model
+                ExperienceTuple experience_tuple(currentagentstate->GetPureState(),nextaction,currentenvironmentstate.get(),response->GetReward());
                 current_model->UpdateModel(experience_tuple,true);
                 LogModel((episodecounter+total_episode_count),stepsizecounter,current_model);
                 LogExperience((episodecounter+total_episode_count),stepsizecounter,experience_tuple);
                 // -----------RLCDS----------------------------------------------
-
                 // add new state to qtable
                 std::list<State>::iterator nextagentstate = AddNewStateToQTable(currentenvironmentstate.get(),current_model->GetQTable());
                 // calculate the error
