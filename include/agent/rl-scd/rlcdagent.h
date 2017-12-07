@@ -28,6 +28,7 @@
 #include <sys/types.h>
 #include <netinet/in.h>
 #include <netdb.h>
+#include <deque>
 #include "../../../include/rlinterface/environment.h"
 #include "../../../include/rlinterface/state.h"
 #include "../../../include/rlinterface/response.h"
@@ -59,9 +60,8 @@ namespace rlscd{
         double planning_limit;
         double priority_threshold;
 
-        //models
-        // std::vector<std::unique_ptr<Model>> models;
-		std::deque <Model> models = {};
+		//models
+        std::list<std::unique_ptr<Model>> models;
         Model *current_model;
 
         //priority queue
@@ -110,7 +110,9 @@ namespace rlscd{
 		void Train(int numberofepisode);
         void SetAlpha(double alpha);
         void SetEpsilon(double epsilon);
-        void SetEnvironment(std::unique_ptr<rlinterface::Environment> environment);
+		void DecreaseEpsilon(double factor);
+		void SetEnvironment (std::unique_ptr<rlinterface::Environment> new_environment);
+		void TerminateLearning();
         std::list<State>& GetQTable(std::list<State> &qtable);
 
         // logging funtions

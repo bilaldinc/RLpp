@@ -20,26 +20,23 @@
 using namespace std;
 
 int main() {
-    std::cout << "hello world!" << '\n';
+
     std::string filename = "logs";
 
-    // int size = 10;
-    // int initialX = 9;
-    // int initialY = 9;
-    // int terminalX = 0;
-    // int terminalY = 0;
-    // double reward = 1;
-    // simplegridworld::GridWorld* world1p = new simplegridworld::GridWorld("hugeHalls.gwmap", reward);
-    // std::unique_ptr<simplegridworld::GridWorld> world1(world1p);
+	// int size = 10;
+	// int initialX = 9;
+	// int initialY = 9;
+	// int terminalX = 0;
+	// int terminalY = 0;
+	// double reward = 1;
+	// simplegridworld::GridWorld* world1p = new simplegridworld::GridWorld("hugeHalls.gwmap",reward);
+	// std::unique_ptr<simplegridworld::GridWorld> world1(world1p);
 
-	int size = 10;
-	int initialX = 9;
-	int initialY = 9;
-	int terminalX = 0;
-	int terminalY = 0;
-	double reward = 1;
-	simplegridworld::GridWorld* world1p = new simplegridworld::GridWorld("hugeHalls.gwmap",reward);
+	simplegridworld::GridWorld* world1p = new simplegridworld::GridWorld(10, 0, 0, 9, 9, 0.1);
 	std::unique_ptr<simplegridworld::GridWorld> world1(world1p);
+
+	simplegridworld::GridWorld* world2p = new simplegridworld::GridWorld(10, 0, 0, 0, 9, 0.1);
+	std::unique_ptr<simplegridworld::GridWorld> world2(world2p);
 
 	double gamma = 0.9;
     double epsilon = 0.1;
@@ -57,7 +54,21 @@ int main() {
 	agent1.SetLogModel(false);
 	agent1.SetLogQtable(false);
 	agent1.SetLogHistory(false);
-	agent1.Train(200);
+
+	agent1.socketConnection(20000);
+
+	agent1.Train(1000);
+
+	agent1.SetEnvironment(std::move(world2));
+	agent1.Train(1000);
+
+	agent1.SetEnvironment(std::move(world1));
+	agent1.Train(1000);
+
+	agent1.SetEnvironment(std::move(world2));
+	agent1.Train(1000);
+
+	agent1.TerminateLearning();
 
     std::cout << "End of the program" << '\n';
     return 0;

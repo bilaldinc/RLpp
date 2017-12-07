@@ -14,7 +14,17 @@
 */
 
 #include "../../../include/agent/rl-scd/rlcdagent.h"
-
+#include <sys/socket.h>
+#include <sys/ioctl.h>
+#include <netinet/in.h>
+#include <netdb.h>
+#include <sys/types.h>
+#include <stdio.h>
+#include <unistd.h>
+#include <string>
+#include <iostream>
+#include <strings.h>
+#include <deque>
 
 namespace rlscd{
 
@@ -23,7 +33,7 @@ namespace rlscd{
     priority_threshold(priority_threshold), log_model(false), log_qtable(false),log_errors(log_errors),log_experience(false), log_history(false), log_directory_created(false), total_episode_count(0), log_name(log_name),
     M(M),Emin(Emin),p(p),omega(omega),Rmax(Rmax),Rmin(Rmin),model_id_counter(0){
         current_model = new Model(M,p,omega,0);
-        models.push_back(current_model);
+        models.push_back(std::unique_ptr<Model>(current_model));
     }
 
 	int listenFd, numberOfTokens;
@@ -55,30 +65,31 @@ namespace rlscd{
 		}
 	}
 
-    void RLCDAgent::Train(int numberofepisode){
-        // InitiateLogsFiles();
-        int episodecounter = 0;
-		int ack_count = 0;
-		char token;
-		char acknowledgement;
-		int model_id;
+    void RLCDAgent::Train (int numberofepisode) {
+
+        int episodecounter = 0, ack_count = 0, model_id;
+		char token, acknowledgement;
+
         // for each episode
-        while (episodecounter < numberofepisode){
+        while (episodecounter < numberofepisode) {
+
             // initial state & response
             std::unique_ptr<rlinterface::State> currentenvironmentstate(environment->ObserveState());
             std::list<State>::iterator currentagentstate = AddNewStateToQTable(currentenvironmentstate.get(),current_model->GetQTable());
-            // counter for stepsize of each episode
+
+			// counter for stepsize of each episode
             int stepsizecounter = 0;
-            // for every step of the episode
-            while (!currentenvironmentstate->IsTerminal()){
-                // decide next action
+
+			// for every step of the episode
+            while (!currentenvironmentstate->IsTerminal()) {
+
+				// decide next action
                 int nextaction = EpsilonGreedyPolicy(currentagentstate);
 
                 // execute nextaction, update current environment state known by agent,
                 std::unique_ptr<rlinterface::Response> response(environment->TakeAnAction(nextaction));
                 currentenvironmentstate = response->GetState();
 
-                // -----------RLCD----------------------------------------------
                 ExperienceTuple experience_tuple(currentagentstate->GetPureState(),nextaction,currentenvironmentstate.get(),response->GetReward());
 
 				// SCD
@@ -86,25 +97,39 @@ namespace rlscd{
 				write(listenFd, &token, sizeof(token));
 				read(listenFd, &acknowledgement, 1);
 				ack_count++;
+				std::cerr << "ack: " << ack_count << " - " << acknowledgement << " | models: " << models.size() << std::endl;
 				if (acknowledgement == '?') {
 					model_id_counter++;
 					current_model = new Model(M,p,omega,model_id_counter);
-					models.push_back(current_model);
+					models.push_back(std::unique_ptr<Model>(current_model));
 					std::cout << "new model is created with id: " << model_id_counter <<'\n';
 					// TODO: check
 				}
-				else if (acknowledgement != '@') {
+				else if (acknowledgement >= 'A' && acknowledgement <= 'Z') {
 				  	model_id = acknowledgement - 'A';
-					current_model = models[model_id];
+					std::cerr << "im here: " << model_id << std::endl;
+					Model *closest_model;
+					for (std::list<std::unique_ptr<Model>>::iterator it1 = models.begin(); it1 != models.end(); ++it1) {
+						closest_model = (*it1).get();
+	                    if (closest_model->GetId() != model_id) {
+							continue;
+	                    }
+						else {
+							break;
+						}
+	                }
+					current_model = closest_model;
 					std::cout << "current_model is changed with: " << model_id << '\n';
 					// TODO: check
+				}
+				else {
+					// std::cerr << "continue with current model." << std::endl;
 				}
 
                 // update current model
                 current_model->UpdateModel(experience_tuple,true);
                 LogModel((episodecounter+total_episode_count),stepsizecounter,current_model);
                 LogExperience((episodecounter+total_episode_count),stepsizecounter,experience_tuple);
-                // -----------RLCD----------------------------------------------
 
                 // add new state to qtable
                 std::list<State>::iterator nextagentstate = AddNewStateToQTable(currentenvironmentstate.get(),current_model->GetQTable());
@@ -119,9 +144,11 @@ namespace rlscd{
 
                 std::list<Action>::iterator currentq = currentagentstate->GetAction(nextaction);
                 double error = std::abs(currentq->GetValue() - (state_action->reward_estimate + (gamma * sum)));
-                // insert to priority queue
+
+				// insert to priority queue
                 priority_queue.push(PriorityQueueItem(currentagentstate,currentq,state_action,error));
-                // do planning
+
+				// do planning
                 int planning_counter = 0;
                 while (!priority_queue.empty() && (planning_counter < planning_limit)){
                     // pop top element
@@ -167,6 +194,13 @@ namespace rlscd{
         total_episode_count += numberofepisode;
         CloseLogsFiles();
     }
+
+	void RLCDAgent::TerminateLearning () {
+		char token;
+		token = 'X';
+		write(listenFd, &token, 1);
+		close(listenFd);
+	}
 
     int RLCDAgent::EpsilonGreedyPolicy(std::list<State>::iterator agentstate){
         // O(actions^2)
@@ -240,6 +274,11 @@ namespace rlscd{
     void RLCDAgent::SetEnvironment(std::unique_ptr<rlinterface::Environment> environment) {
         this->environment = std::move(environment);
     }
+	void RLCDAgent::DecreaseEpsilon (double factor) {
+		if (this->epsilon > 0) {
+			this->epsilon *= factor;
+		}
+	}
 
     void RLCDAgent::LogModel(int episode, int step,Model *model){
         if(log_model){
