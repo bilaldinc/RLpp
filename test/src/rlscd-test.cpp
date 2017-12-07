@@ -32,11 +32,22 @@ int main() {
 	// simplegridworld::GridWorld* world1p = new simplegridworld::GridWorld("hugeHalls.gwmap",reward);
 	// std::unique_ptr<simplegridworld::GridWorld> world1(world1p);
 
-	simplegridworld::GridWorld* world1p = new simplegridworld::GridWorld(10, 0, 0, 9, 9, 0.1);
-	std::unique_ptr<simplegridworld::GridWorld> world1(world1p);
+	simplegridworld::GridWorld* worldp = new simplegridworld::GridWorld(10, 0, 0, 9, 9, 0.1);
+	std::unique_ptr<simplegridworld::GridWorld> world1_1(worldp);
 
-	simplegridworld::GridWorld* world2p = new simplegridworld::GridWorld(10, 0, 0, 0, 9, 0.1);
-	std::unique_ptr<simplegridworld::GridWorld> world2(world2p);
+	worldp = new simplegridworld::GridWorld(10, 0, 0, 0, 9, 0.1);
+	std::unique_ptr<simplegridworld::GridWorld> world2_1(worldp);
+	
+	worldp = new simplegridworld::GridWorld(10, 0, 0, 9, 9, 0.1);
+	std::unique_ptr<simplegridworld::GridWorld> world1_2(worldp);
+
+	worldp = new simplegridworld::GridWorld(10, 0, 0, 0, 9, 0.1);
+	std::unique_ptr<simplegridworld::GridWorld> world2_2(worldp);
+	
+	
+	
+
+
 
 	double gamma = 0.9;
     double epsilon = 0.1;
@@ -48,7 +59,7 @@ int main() {
     double omega = 0;
     double Rmax = 10;
     double Rmin = -1;
-	rlscd::RLCDAgent agent1(std::move(world1), gamma, epsilon, planning_limit, priority_threshold,filename,M,Emin,p,omega,Rmax,Rmin);
+	rlscd::RLCDAgent agent1(std::move(world1_1), gamma, epsilon, planning_limit, priority_threshold,filename,M,Emin,p,omega,Rmax,Rmin);
 	agent1.SetLogExperience(false);
 	agent1.SetLogErrors(false);
 	agent1.SetLogModel(false);
@@ -57,16 +68,16 @@ int main() {
 
 	agent1.socketConnection(20000);
 
-	agent1.Train(1000);
+	agent1.Train(200);
 
-	agent1.SetEnvironment(std::move(world2));
-	agent1.Train(1000);
+	agent1.SetEnvironment(std::move(world2_1));
+	agent1.Train(200);
 
-	agent1.SetEnvironment(std::move(world1));
-	agent1.Train(1000);
+	agent1.SetEnvironment(std::move(world1_2));
+	agent1.Train(200);
 
-	agent1.SetEnvironment(std::move(world2));
-	agent1.Train(1000);
+	agent1.SetEnvironment(std::move(world2_2));
+	agent1.Train(200);
 
 	agent1.TerminateLearning();
 

@@ -90,24 +90,22 @@ namespace rlscd{
                 std::unique_ptr<rlinterface::Response> response(environment->TakeAnAction(nextaction));
                 currentenvironmentstate = response->GetState();
 
-                ExperienceTuple experience_tuple(currentagentstate->GetPureState(),nextaction,currentenvironmentstate.get(),response->GetReward());
 
 				// SCD
 				token = nextaction + '0';
 				write(listenFd, &token, sizeof(token));
 				read(listenFd, &acknowledgement, 1);
 				ack_count++;
-				std::cerr << "ack: " << ack_count << " - " << acknowledgement << " | models: " << models.size() << std::endl;
+				//std::cerr << "ack: " << ack_count << " - " << acknowledgement << " | models: " << models.size() << std::endl;
 				if (acknowledgement == '?') {
 					model_id_counter++;
 					current_model = new Model(M,p,omega,model_id_counter);
 					models.push_back(std::unique_ptr<Model>(current_model));
+                    currentagentstate = AddNewStateToQTable(currentagentstate->GetPureState()->clone(),current_model->GetQTable());
 					std::cout << "new model is created with id: " << model_id_counter <<'\n';
-					// TODO: check
 				}
 				else if (acknowledgement >= 'A' && acknowledgement <= 'Z') {
 				  	model_id = acknowledgement - 'A';
-					std::cerr << "im here: " << model_id << std::endl;
 					Model *closest_model;
 					for (std::list<std::unique_ptr<Model>>::iterator it1 = models.begin(); it1 != models.end(); ++it1) {
 						closest_model = (*it1).get();
@@ -119,14 +117,15 @@ namespace rlscd{
 						}
 	                }
 					current_model = closest_model;
+                    currentagentstate = AddNewStateToQTable(currentagentstate->GetPureState()->clone(),current_model->GetQTable());
 					std::cout << "current_model is changed with: " << model_id << '\n';
 					// TODO: check
 				}
 				else {
 					// std::cerr << "continue with current model." << std::endl;
 				}
-
                 // update current model
+                ExperienceTuple experience_tuple(currentagentstate->GetPureState(),nextaction,currentenvironmentstate.get(),response->GetReward());
                 current_model->UpdateModel(experience_tuple,true);
                 LogModel((episodecounter+total_episode_count),stepsizecounter,current_model);
                 LogExperience((episodecounter+total_episode_count),stepsizecounter,experience_tuple);
@@ -146,8 +145,8 @@ namespace rlscd{
                 double error = std::abs(currentq->GetValue() - (state_action->reward_estimate + (gamma * sum)));
 
 				// insert to priority queue
+                
                 priority_queue.push(PriorityQueueItem(currentagentstate,currentq,state_action,error));
-
 				// do planning
                 int planning_counter = 0;
                 while (!priority_queue.empty() && (planning_counter < planning_limit)){
