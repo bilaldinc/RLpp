@@ -100,6 +100,7 @@ namespace rlscd{
         std::list<State>& GetQTable();
         double GetE() const;
         int GetId();
+        void SetId(int id);
         bool operator < (const Model& model);
   };
 

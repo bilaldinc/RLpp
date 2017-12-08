@@ -250,6 +250,10 @@ namespace rlscd{
         return id;
     }
 
+	void Model::SetId(int id) {
+		this->id = id;
+	}
+
     double Model::GetE() const{
         return E;
     }

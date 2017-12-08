@@ -33,7 +33,7 @@ namespace rlscd{
     priority_threshold(priority_threshold), log_model(false), log_qtable(false),log_errors(log_errors),log_experience(false), log_history(false), log_directory_created(false), total_episode_count(0), log_name(log_name),
     M(M),Emin(Emin),p(p),omega(omega),Rmax(Rmax),Rmin(Rmin),model_id_counter(0){
         current_model = new Model(M,p,omega,0);
-        models.push_back(std::unique_ptr<Model>(current_model));
+        // models.push_back(std::unique_ptr<Model>(current_model));
     }
 
 	int listenFd, numberOfTokens;
@@ -67,6 +67,7 @@ namespace rlscd{
 
     void RLCDAgent::Train (int numberofepisode) {
 
+		InitiateLogsFiles();
         int episodecounter = 0, ack_count = 0, model_id;
 		char token, acknowledgement;
 
@@ -90,36 +91,56 @@ namespace rlscd{
                 std::unique_ptr<rlinterface::Response> response(environment->TakeAnAction(nextaction));
                 currentenvironmentstate = response->GetState();
 
-
 				// SCD
 				token = nextaction + '0';
 				write(listenFd, &token, sizeof(token));
 				read(listenFd, &acknowledgement, 1);
 				ack_count++;
 				//std::cerr << "ack: " << ack_count << " - " << acknowledgement << " | models: " << models.size() << std::endl;
+
 				if (acknowledgement == '?') {
-					model_id_counter++;
-					current_model = new Model(M,p,omega,model_id_counter);
+					current_model->SetId(model_id_counter++);
+					if (log_history) {
+						changefile << "e" << (episodecounter + total_episode_count) << " s" << stepsizecounter;
+						changefile << " new model created (?): " << current_model->GetId() << '\n';
+					}
 					models.push_back(std::unique_ptr<Model>(current_model));
+					current_model = new Model(M,p,omega,-1);
                     currentagentstate = AddNewStateToQTable(currentagentstate->GetPureState()->clone(),current_model->GetQTable());
 					std::cout << "new model is created with id: " << model_id_counter <<'\n';
 				}
+				else if (acknowledgement == '>') {
+					current_model = new Model(M,p,omega,-1);
+					// if (log_history) {
+					// 	changefile << "e" << (episodecounter + total_episode_count) << " s" << stepsizecounter;
+					// 	changefile << " new model created (>): " << current_model->GetId() << '\n';
+					// }
+					currentagentstate = AddNewStateToQTable(currentagentstate->GetPureState()->clone(),current_model->GetQTable());
+				}
 				else if (acknowledgement >= 'A' && acknowledgement <= 'Z') {
-				  	model_id = acknowledgement - 'A';
-					Model *closest_model;
-					for (std::list<std::unique_ptr<Model>>::iterator it1 = models.begin(); it1 != models.end(); ++it1) {
-						closest_model = (*it1).get();
-	                    if (closest_model->GetId() != model_id) {
-							continue;
-	                    }
-						else {
-							break;
+					model_id = acknowledgement - 'A';
+					if (current_model->GetId() == model_id) {
+                        // continue wit current known model
+					}
+					else {
+						Model *closest_model;
+						for (std::list<std::unique_ptr<Model>>::iterator it1 = models.begin(); it1 != models.end(); ++it1) {
+							closest_model = (*it1).get();
+							if (closest_model->GetId() != model_id) {
+								continue;
+							}
+							else {
+								break;
+							}
 						}
-	                }
-					current_model = closest_model;
-                    currentagentstate = AddNewStateToQTable(currentagentstate->GetPureState()->clone(),current_model->GetQTable());
-					std::cout << "current_model is changed with: " << model_id << '\n';
-					// TODO: check
+						current_model = closest_model;
+						if (log_history) {
+							changefile << "e" << (episodecounter + total_episode_count) << " s" << stepsizecounter;
+							changefile << " change to: " << current_model->GetId() << '\n';
+						}
+						currentagentstate = AddNewStateToQTable(currentagentstate->GetPureState()->clone(),current_model->GetQTable());
+						std::cout << "current_model is changed with: " << model_id << '\n';
+					}
 				}
 				else {
 					// std::cerr << "continue with current model." << std::endl;
@@ -145,7 +166,7 @@ namespace rlscd{
                 double error = std::abs(currentq->GetValue() - (state_action->reward_estimate + (gamma * sum)));
 
 				// insert to priority queue
-                
+
                 priority_queue.push(PriorityQueueItem(currentagentstate,currentq,state_action,error));
 				// do planning
                 int planning_counter = 0;

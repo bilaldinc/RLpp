@@ -32,27 +32,22 @@ int main() {
 	// simplegridworld::GridWorld* world1p = new simplegridworld::GridWorld("hugeHalls.gwmap",reward);
 	// std::unique_ptr<simplegridworld::GridWorld> world1(world1p);
 
-	simplegridworld::GridWorld* worldp = new simplegridworld::GridWorld(10, 0, 0, 9, 9, 0.1);
+	simplegridworld::GridWorld* worldp = new simplegridworld::GridWorld("e1.gwmap", 0.1);
 	std::unique_ptr<simplegridworld::GridWorld> world1_1(worldp);
 
-	worldp = new simplegridworld::GridWorld(10, 0, 0, 0, 9, 0.1);
+	worldp = new simplegridworld::GridWorld("e2.gwmap", 0.1);
 	std::unique_ptr<simplegridworld::GridWorld> world2_1(worldp);
-	
-	worldp = new simplegridworld::GridWorld(10, 0, 0, 9, 9, 0.1);
+
+	worldp = new simplegridworld::GridWorld("e1.gwmap", 0.1);
 	std::unique_ptr<simplegridworld::GridWorld> world1_2(worldp);
 
-	worldp = new simplegridworld::GridWorld(10, 0, 0, 0, 9, 0.1);
+	worldp = new simplegridworld::GridWorld("e2.gwmap", 0.1);
 	std::unique_ptr<simplegridworld::GridWorld> world2_2(worldp);
-	
-	
-	
-
-
 
 	double gamma = 0.9;
     double epsilon = 0.1;
     double planning_limit = 250;
-    double priority_threshold = 0.01;
+    double priority_threshold = 0.0001;
     int M = 2;
     double Emin = -0.1;
     double p = 0.4;
@@ -64,7 +59,7 @@ int main() {
 	agent1.SetLogErrors(false);
 	agent1.SetLogModel(false);
 	agent1.SetLogQtable(false);
-	agent1.SetLogHistory(false);
+	agent1.SetLogHistory(true);
 
 	agent1.socketConnection(20000);
 
